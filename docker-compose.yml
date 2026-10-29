@@ -1,0 +1,54 @@
+﻿version: '3.9'
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: appnutri_api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - GIN_MODE=release
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=gemini-2.0-flash
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/appnutri?sslmode=disable
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+    networks:
+      - appnutri_net
+
+  db:
+    image: postgres:16-alpine
+    container_name: appnutri_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=appnutri
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - appnutri_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: appnutri_redis
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+    networks:
+      - appnutri_net
+
+volumes:
+  pgdata:
+  redisdata:
+
+networks:
+  appnutri_net:
+    driver: bridge
