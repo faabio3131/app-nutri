@@ -1,0 +1,16 @@
+﻿# Binários e variáveis de ambiente Go
+backend/bin/
+backend/*.exe
+backend/.env
+
+# Next.js / Node
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*
+
+# Geral / IDE
+.env
+.vscode/
+.DS_Store
+Thumbs.db
