@@ -1,4 +1,4 @@
-﻿export interface MealItem {
+export interface MealItem {
   name: string;
   estimated_weight_g: number;
   calories: number;
@@ -20,7 +20,6 @@ export interface MealAnalysisResponse {
   items: MealItem[];
 }
 
-// Comprime a foto da câmera no próprio celular para ~200KB (WebP) antes do upload
 export async function compressMealImage(file: File, maxWidth = 1280, quality = 0.8): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -36,7 +35,7 @@ export async function compressMealImage(file: File, maxWidth = 1280, quality = 0
 
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       canvas.toBlob(
-        (blob) => (blob ? resolve(blob) : reject(new Error('Falha na compressão WebP'))),
+        (blob) => (blob ? resolve(blob) : reject(new Error('Falha na compressao WebP'))),
         'image/webp',
         quality
       );
@@ -45,14 +44,13 @@ export async function compressMealImage(file: File, maxWidth = 1280, quality = 0
   });
 }
 
-// Envia a imagem comprimida para o Backend em Go
 export async function analyzeMealPhoto(file: File, locale = 'pt-BR'): Promise<MealAnalysisResponse> {
   const compressedBlob = await compressMealImage(file);
   const formData = new FormData();
   formData.append('image', compressedBlob, 'meal.webp');
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
-  const response = await fetch(${apiUrl}/meals/analyze, {
+  const response = await fetch(`${apiUrl}/meals/analyze`, {
     method: 'POST',
     headers: {
       'Accept-Language': locale,
@@ -62,7 +60,7 @@ export async function analyzeMealPhoto(file: File, locale = 'pt-BR'): Promise<Me
 
   if (!response.ok) {
     const errData = await response.json();
-    throw new Error(errData.error || 'Erro ao analisar refeição');
+    throw new Error(errData.error || 'Erro ao analisar refeicao');
   }
 
   const result = await response.json();

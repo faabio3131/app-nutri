@@ -1,4 +1,4 @@
-﻿package gemini
+package gemini
 
 import (
     "bytes"
@@ -35,14 +35,14 @@ func NewClient() *Client {
 
 func (c *Client) AnalyzeMealImage(imageBytes []byte, mimeType string, locale string) (*domain.GeminiResponseSchema, error) {
     if c.apiKey == "" {
-        return nil, fmt.Errorf("GEMINI_API_KEY não configurada no ambiente")
+        return nil, fmt.Errorf("GEMINI_API_KEY nao configurada no ambiente")
     }
     if locale == "" {
         locale = "pt-BR"
     }
 
-    prompt := fmt.Sprintf(Você é um nutricionista especialista em visão computacional e análise volumétrica de alimentos.
-Analise a foto do prato e retorne ESTRITAMENTE um objeto JSON válido seguindo esta estrutura exata:
+    prompt := fmt.Sprintf(`Voce e um nutricionista especialista em visao computacional e analise volumetrica de alimentos.
+Analise a foto do prato e retorne ESTRITAMENTE um objeto JSON valido seguindo esta estrutura exata:
 {
   "meal_summary": {
     "name": "Nome resumido do prato",
@@ -51,7 +51,7 @@ Analise a foto do prato e retorne ESTRITAMENTE um objeto JSON válido seguindo e
     "total_carbs_g": 0.0,
     "total_fat_g": 0.0,
     "confidence_level": "ALTO, MEDIO ou BAIXO",
-    "notes": "Observações sobre preparo, óleos ocultos ou dicas nutricionais"
+    "notes": "Observacoes sobre preparo, oleos ocultos ou dicas nutricionais"
   },
   "items": [
     {
@@ -64,7 +64,7 @@ Analise a foto do prato e retorne ESTRITAMENTE um objeto JSON válido seguindo e
     }
   ]
 }
-Idioma obrigatório para todos os textos de retorno: %s. Use a tabela TACO/TBCA como referência nutricional., locale)
+Idioma obrigatorio para todos os textos de retorno: %s. Use a tabela TACO/TBCA como referencia nutricional.`, locale)
 
     b64Image := base64.StdEncoding.EncodeToString(imageBytes)
 
@@ -119,10 +119,10 @@ Idioma obrigatório para todos os textos de retorno: %s. Use a tabela TACO/TBCA 
         Candidates []struct {
             Content struct {
                 Parts []struct {
-                    Text string json:"text"
-                } json:"parts"
-            } json:"content"
-        } json:"candidates"
+                    Text string `json:"text"`
+                } `json:"parts"`
+            } `json:"content"`
+        } `json:"candidates"`
     }
 
     if err := json.Unmarshal(respBody, &rawResp); err != nil {

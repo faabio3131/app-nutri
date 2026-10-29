@@ -1,9 +1,9 @@
-﻿import './globals.css';
+import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'App Nutri IA - Calculadora de Calorias por Foto',
-  description: 'Escaneie seu prato e bata suas metas de calorias, proteínas e água.',
+  description: 'Escaneie o seu prato e atinja as suas metas de calorias, proteinas e agua.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,23 +1,23 @@
-﻿package domain
+package domain
 
 import "math"
 
 type UserBiometrics struct {
-    WeightKg      float64 json:"weight_kg"
-    TargetWeight  float64 json:"target_weight_kg"
-    HeightCm      float64 json:"height_cm"
-    Age           int     json:"age"
-    Gender        string  json:"gender"
-    ActivityLevel string  json:"activity_level"
+    WeightKg      float64 `json:"weight_kg"`
+    TargetWeight  float64 `json:"target_weight_kg"`
+    HeightCm      float64 `json:"height_cm"`
+    Age           int     `json:"age"`
+    Gender        string  `json:"gender"`
+    ActivityLevel string  `json:"activity_level"`
 }
 
 type NutritionTarget struct {
-    TDEE           int json:"tdee"
-    CalorieTarget  int json:"calorie_target"
-    ProteinTargetG int json:"protein_target_g"
-    CarbTargetG    int json:"carb_target_g"
-    FatTargetG     int json:"fat_target_g"
-    WaterGoalMl    int json:"water_goal_ml"
+    TDEE           int `json:"tdee"`
+    CalorieTarget  int `json:"calorie_target"`
+    ProteinTargetG int `json:"protein_target_g"`
+    CarbTargetG    int `json:"carb_target_g"`
+    FatTargetG     int `json:"fat_target_g"`
+    WaterGoalMl    int `json:"water_goal_ml"`
 }
 
 func CalculateNutritionPlan(bio UserBiometrics) NutritionTarget {
