@@ -5,8 +5,17 @@ import { api, ApiError, getToken, setToken, todayKey, todayWeekday, Usage } from
 import { analyzeMealPhoto, AnalyzeResponse } from '@/features/meal-scanner/mealScannerService';
 import { PLANS, SUPPORT_EMAIL } from '@/lib/plans';
 import AuthScreen from '@/components/AuthScreen';
+import CloseDayModal, { Closure, Objective } from '@/components/CloseDayModal';
+import ExerciseModal from '@/components/ExerciseModal';
+import TextMealModal from '@/components/TextMealModal';
+import MealEditModal, { EditableMeal } from '@/components/MealEditModal';
+import HistoryTab from '@/components/HistoryTab';
+import OnboardingModal, { Profile } from '@/components/OnboardingModal';
+import { ACTIVITIES, activityLabel, estimateBurn } from '@/lib/activities';
+import { notifyUser } from '@/lib/pwa';
 
-type Workout = { id: number; activity: string; time: string; duration: number; burned: number };
+type Workout = { id: number; activity: string; kind?: string; time: string; duration: number; burned: number };
+type WorkoutLog = { id: string; activity: string; duration_min: number; intensity: string; calories_burned: number; ref?: string };
 type MealRow = { id: string; meal_type: string; name: string; total_calories: number; total_protein_g: number; total_carbs_g: number; total_fat_g: number };
 type Goals = { calorie_target: number; protein_target_g: number; carb_target_g: number; fat_target_g: number; water_goal_ml: number };
 type Schedule = { id: number; name: string; time: string; enabled: boolean };
@@ -22,7 +31,10 @@ const DEFAULT_SCHEDULE: Schedule[] = [
 const ACTIVITY: Record<string, string> = { 'Sedentário': 'sedentary', 'Leve': 'light', 'Moderado (3 a 5 treinos por semana)': 'moderate', 'Intenso': 'intense' };
 const MEAL_LABEL: Record<string, string> = { cafe: 'Café', almoco: 'Almoço', lanche: 'Lanche', jantar: 'Jantar', outro: 'Refeição' };
 const INTERVAL_MIN: Record<string, number> = { '45min': 45, '1h': 60, '1h30': 90, '2h': 120 };
-const RATE: Record<string, number> = { caminhada: 4, corrida: 11, musculacao: 6, bicicleta: 8 };
+function kindOf(w: Workout): string {
+  const k = w.kind || w.activity.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return ACTIVITIES.some((a) => a.id === k) ? k : 'outro';
+}
 
 function prune<T>(o: Record<string, T>, keep = 60): Record<string, T> {
   const keys = Object.keys(o).sort().slice(-keep);
@@ -34,7 +46,7 @@ function nowSP(): { hhmm: string; hour: number } {
 }
 
 function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usage; setUsage: (u: Usage) => void; onLogout: () => void }) {
-  const [activeTab, setActiveTab] = useState<'diario' | 'metas' | 'planos'>('diario');
+  const [activeTab, setActiveTab] = useState<'diario' | 'historico' | 'metas' | 'planos'>('diario');
   const [selectedDay, setSelectedDay] = useState(todayWeekday());
   const [loaded, setLoaded] = useState(false);
   const today = todayKey();
@@ -63,6 +75,15 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
   const [calcBusy, setCalcBusy] = useState(false);
   const [banner, setBanner] = useState('');
   const [saveError, setSaveError] = useState(false);
+  const [onboarded, setOnboarded] = useState<string>('');
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showClose, setShowClose] = useState(false);
+  const [showExercise, setShowExercise] = useState(false);
+  const [showText, setShowText] = useState(false);
+  const [editMeal, setEditMeal] = useState<EditableMeal | null>(null);
+  const [workoutsToday, setWorkoutsToday] = useState<WorkoutLog[]>([]);
+  const [closure, setClosure] = useState<Closure | null>(null);
+  const [histKey, setHistKey] = useState(0);
 
   const fileRef = useRef<HTMLInputElement>(null);
   const [scanning, setScanning] = useState(false);
@@ -84,6 +105,17 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
     } catch (e) { handleAuthError(e); }
   }, [handleAuthError]);
 
+  const loadWorkouts = useCallback(async () => {
+    try {
+      const r = await api<{ workouts: WorkoutLog[] }>(`/workouts?date=${todayKey()}`);
+      setWorkoutsToday(r.workouts);
+    } catch (e) { handleAuthError(e); }
+  }, [handleAuthError]);
+  const loadClosure = useCallback(async () => {
+    try { const r = await api<{ closure: Closure | null }>('/days/summary'); setClosure(r.closure); } catch (e) { handleAuthError(e); }
+  }, [handleAuthError]);
+  const refreshDay = useCallback(async () => { await Promise.all([loadMeals(), loadWorkouts(), loadClosure()]); setHistKey((k) => k + 1); }, [loadMeals, loadWorkouts, loadClosure]);
+
   // Carrega estado e diário
   useEffect(() => {
     (async () => {
@@ -97,15 +129,17 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
         if (d.waterInterval) setWaterInterval(d.waterInterval);
         if (d.mealsSchedule) setMealsSchedule(d.mealsSchedule);
         if (d.weeklyWorkouts) setWeeklyWorkouts(d.weeklyWorkouts);
+        if (d.onboarded) setOnboarded(String(d.onboarded));
+        if (!d.onboarded && !d.profile) setShowOnboarding(true);
         if (d.profile) {
           setCurrentWeight(d.profile.weight); setTargetWeight(d.profile.target); setHeight(d.profile.height);
           setAge(d.profile.age); setGender(d.profile.gender); setActivityLevel(d.profile.activity);
         }
       } catch (e) { handleAuthError(e); }
-      await loadMeals();
+      await Promise.all([loadMeals(), loadWorkouts(), loadClosure()]);
       setLoaded(true);
     })();
-  }, [handleAuthError, loadMeals]);
+  }, [handleAuthError, loadMeals, loadWorkouts, loadClosure]);
 
   // Salva (com pequena espera) sempre que algo muda
   useEffect(() => {
@@ -113,14 +147,14 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
     const t = setTimeout(async () => {
       try {
         await api('/state', { method: 'PUT', body: {
-          goals, water: prune(water), doneLog: prune(doneLog), waterAlarm: waterAlarmEnabled, waterInterval, mealsSchedule, weeklyWorkouts,
+          goals, water: prune(water), doneLog: prune(doneLog), waterAlarm: waterAlarmEnabled, waterInterval, mealsSchedule, weeklyWorkouts, onboarded,
           profile: { weight: currentWeight, target: targetWeight, height, age, gender, activity: activityLevel },
         } });
         setSaveError(false);
       } catch (e) { if (!handleAuthError(e)) setSaveError(true); }
     }, 800);
     return () => clearTimeout(t);
-  }, [loaded, goals, water, doneLog, waterAlarmEnabled, waterInterval, mealsSchedule, weeklyWorkouts, currentWeight, targetWeight, height, age, gender, activityLevel, handleAuthError]);
+  }, [loaded, goals, water, doneLog, waterAlarmEnabled, waterInterval, mealsSchedule, weeklyWorkouts, onboarded, currentWeight, targetWeight, height, age, gender, activityLevel, handleAuthError]);
 
   // Lembretes (funcionam com o app aberto; usam notificação do navegador quando permitida)
   const fired = useRef<Set<string>>(new Set());
@@ -129,7 +163,7 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
   useEffect(() => {
     const notify = (msg: string) => {
       setBanner(msg);
-      try { if (typeof Notification !== 'undefined' && Notification.permission === 'granted') new Notification('NutriSnap IA', { body: msg }); } catch { /* sem suporte */ }
+      notifyUser('NutriSnap IA', msg);
     };
     const tick = () => {
       const { hhmm, hour } = nowSP();
@@ -166,12 +200,21 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
 
   const isToday = (day: string) => day === todayWeekday();
   const isDone = (day: string, id: number) => isToday(day) && (doneLog[today] || []).includes(id);
-  const toggleWorkoutCompleted = (day: string, id: number) => {
+  const toggleWorkoutCompleted = async (day: string, id: number) => {
     if (!isToday(day)) return;
-    setDoneLog((prev) => {
-      const cur = prev[today] || [];
-      return { ...prev, [today]: cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id] };
-    });
+    const w = (weeklyWorkouts[day] || []).find((x) => x.id === id);
+    if (!w) return;
+    const done = (doneLog[today] || []).includes(id);
+    const ref = `rt-${id}-${today}`;
+    try {
+      if (!done) await api('/workouts', { method: 'POST', body: { activity_type: kindOf(w), duration_min: w.duration, intensity: 'moderada', weight_kg: currentWeight, ref } });
+      else await api(`/workouts/by-ref?ref=${encodeURIComponent(ref)}`, { method: 'DELETE' });
+      setDoneLog((prev) => {
+        const cur = prev[today] || [];
+        return { ...prev, [today]: done ? cur.filter((x) => x !== id) : [...cur, id] };
+      });
+      await loadWorkouts(); setHistKey((k) => k + 1);
+    } catch (e: any) { if (!handleAuthError(e)) setBanner(e.message || 'Não foi possível atualizar o exercício.'); }
   };
   const handleAddWeeklyWorkout = (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,8 +222,8 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
     if (!(dur >= 1 && dur <= 600)) return;
     const item: Workout = {
       id: Date.now(),
-      activity: newActivity.charAt(0).toUpperCase() + newActivity.slice(1),
-      time: newTime, duration: dur, burned: dur * (RATE[newActivity] || 5),
+      activity: activityLabel(newActivity), kind: newActivity,
+      time: newTime, duration: dur, burned: estimateBurn(newActivity, dur, 'moderada', currentWeight),
     };
     setWeeklyWorkouts((prev) => ({ ...prev, [selectedDay]: [...(prev[selectedDay] || []), item] }));
   };
@@ -196,6 +239,7 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
         gender, activity_level: ACTIVITY[activityLevel] || 'sedentary',
       } });
       setGoals(r.data);
+      api('/weight', { method: 'POST', body: { weight_kg: Number(currentWeight) } }).then(() => setHistKey((k) => k + 1)).catch(() => undefined);
       setCalculatedPlan(`Plano atualizado! Meta diária: ${r.data.calorie_target} kcal • Proteína ${r.data.protein_target_g} g • Carbo ${r.data.carb_target_g} g • Gordura ${r.data.fat_target_g} g • Água ${r.data.water_goal_ml} ml. Estimativa geral; para acompanhamento individual, procure um nutricionista.`);
     } catch (e: any) { if (!handleAuthError(e)) setCalculatedPlan(e.message); }
     finally { setCalcBusy(false); }
@@ -208,7 +252,7 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
     setScanError(''); setLastScan(null); setScanning(true);
     try {
       const r = await analyzeMealPhoto(f);
-      setLastScan(r); setUsage(r.usage); await loadMeals();
+      setLastScan(r); setUsage(r.usage); await refreshDay();
     } catch (err: any) {
       if (handleAuthError(err)) return;
       if (err instanceof ApiError && err.status === 402) { if (err.data?.usage) setUsage(err.data.usage); setActiveTab('planos'); }
@@ -217,7 +261,7 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
   };
 
   const deleteMeal = async (id: string) => {
-    try { await api(`/meals/${id}`, { method: 'DELETE' }); await loadMeals(); } catch (e) { handleAuthError(e); }
+    try { await api(`/meals/${id}`, { method: 'DELETE' }); await refreshDay(); } catch (e) { handleAuthError(e); }
   };
 
   const exportData = async () => {
@@ -233,6 +277,15 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
     try { await api('/account', { method: 'DELETE', body: { password: delPassword } }); setToken(null); onLogout(); }
     catch (e: any) { if (!handleAuthError(e)) setAccountMsg(e.message); }
   };
+  const deleteWorkoutLog = async (id: string) => {
+    try { await api(`/workouts/${id}`, { method: 'DELETE' }); await loadWorkouts(); setHistKey((k) => k + 1); } catch (e) { handleAuthError(e); }
+  };
+  const finishOnboarding = (g: Goals, p: Profile) => {
+    setGoals(g); setCurrentWeight(p.weight); setTargetWeight(p.target); setHeight(p.height); setAge(p.age); setGender(p.gender); setActivityLevel(Object.keys(ACTIVITY).find((k) => ACTIVITY[k] === p.activity) || 'Leve');
+    setOnboarded('done'); setShowOnboarding(false); setHistKey((k) => k + 1);
+    setBanner(`Pronto! Sua meta diária é ${g.calorie_target} kcal, com ${g.protein_target_g} g de proteína e ${g.water_goal_ml} ml de água.`);
+  };
+  const skipOnboarding = () => { setOnboarded('skipped'); setShowOnboarding(false); };
   const logout = async () => { try { await api('/auth/logout', { method: 'POST' }); } catch { /* segue */ } onLogout(); };
 
   // Derivados
@@ -243,7 +296,9 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
   const protein = Math.round(meals.reduce((a, m) => a + m.total_protein_g, 0));
   const carbs = Math.round(meals.reduce((a, m) => a + m.total_carbs_g, 0));
   const fat = Math.round(meals.reduce((a, m) => a + m.total_fat_g, 0));
-  const caloriesBurned = (weeklyWorkouts[todayWeekday()] || []).filter((w) => (doneLog[today] || []).includes(w.id)).reduce((a, w) => a + w.burned, 0);
+  const caloriesBurned = workoutsToday.reduce((a, w) => a + w.calories_burned, 0);
+  const objective: Objective = targetWeight < currentWeight ? 'lose' : targetWeight > currentWeight ? 'gain' : 'keep';
+  const liveTotals = { consumed: caloriesConsumed, burned: caloriesBurned, net: caloriesConsumed - caloriesBurned, protein, carbs, fat, meals: meals.length };
   const dailyCalorieGoal = goals.calorie_target;
   const netCalories = caloriesConsumed - caloriesBurned;
   const remainingCalories = dailyCalorieGoal - netCalories;
@@ -337,6 +392,21 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
                 </div>
               </div>
 
+              {/* AÇÕES RÁPIDAS DO DIA */}
+              {loaded && onboarded !== 'done' && goals.calorie_target === DEFAULT_GOALS.calorie_target && (
+                <button onClick={() => setShowOnboarding(true)} className="w-full text-left bg-amber-500/10 border border-amber-400/40 rounded-2xl p-3 text-[11px] text-amber-200">
+                  <b>Meta genérica de 2000 kcal.</b> Toque aqui para calcular a sua em 30 segundos.
+                </button>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => setShowExercise(true)} className="py-3 rounded-2xl bg-[#141B2D] border border-rose-500/40 hover:border-rose-400 text-rose-300 font-black text-xs transition flex items-center justify-center gap-1.5">
+                  <span aria-hidden>🔥</span> + Exercício
+                </button>
+                <button onClick={() => setShowClose(true)} className="py-3 rounded-2xl bg-[#141B2D] border border-emerald-500/40 hover:border-emerald-400 text-emerald-300 font-black text-xs transition flex items-center justify-center gap-1.5">
+                  <span aria-hidden>{closure ? '✅' : '🏁'}</span> {closure ? 'Ver balanço do dia' : 'Fechar o dia'}
+                </button>
+              </div>
+
               {/* CARD 2: ESCANEAR PRATO */}
               <input ref={fileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPickPhoto} aria-label="Foto do prato" />
               {noPhotos ? (
@@ -353,6 +423,9 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
                   <span>{scanning ? 'Analisando seu prato...' : 'Escanear Prato por Foto'}</span>
                 </button>
               )}
+              <button onClick={() => setShowText(true)} className="w-full py-3 rounded-2xl bg-[#141B2D] border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-black text-xs transition flex items-center justify-center gap-2">
+                <span aria-hidden>⌨️</span> Digitar o que comi (sem foto)
+              </button>
               {scanError && <p role="alert" className="text-xs text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-xl p-3">{scanError}</p>}
               {lastScan && (
                 <div className="bg-[#141B2D] border border-emerald-500/40 rounded-2xl p-4 space-y-2">
@@ -382,7 +455,23 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
                       <p className="text-xs font-bold text-white truncate">{MEAL_LABEL[m.meal_type] || 'Refeição'} • {m.name || 'Prato'}</p>
                       <span className="text-[10px] text-gray-400">{Math.round(m.total_calories)} kcal • P {Math.round(m.total_protein_g)}g • C {Math.round(m.total_carbs_g)}g • G {Math.round(m.total_fat_g)}g</span>
                     </div>
+                    <button onClick={() => setEditMeal(m)} aria-label={`Editar ${m.name || 'refeição'}`} className="text-cyan-300 hover:text-cyan-200 text-[11px] font-black px-2 py-1">Editar</button>
                     <button onClick={() => deleteMeal(m.id)} aria-label={`Remover ${m.name || 'refeição'}`} className="text-rose-400 hover:text-rose-300 text-xs font-black px-2 py-1">✕</button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-[#141B2D] border border-gray-800 rounded-2xl p-4 space-y-2">
+                <h3 className="text-xs font-bold text-white">Exercícios de hoje</h3>
+                {workoutsToday.length === 0 ? (
+                  <p className="text-[11px] text-gray-400">Nenhum exercício registrado. Use “+ Exercício” ou marque um treino da sua rotina como feito.</p>
+                ) : workoutsToday.map((w) => (
+                  <div key={w.id} className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-[#0B0F17] border border-gray-800/80">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-white truncate">{activityLabel(w.activity)} • {w.duration_min} min</p>
+                      <span className="text-[10px] text-gray-400">{w.intensity} • {w.calories_burned} kcal gastas</span>
+                    </div>
+                    <button onClick={() => deleteWorkoutLog(w.id)} aria-label={`Remover ${activityLabel(w.activity)}`} className="text-rose-400 hover:text-rose-300 text-xs font-black px-2 py-1">✕</button>
                   </div>
                 ))}
               </div>
@@ -609,10 +698,7 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
                       onChange={(e) => setNewActivity(e.target.value)}
                       className="bg-[#0B0F17] border border-gray-800 rounded-xl px-2 py-2 text-[11px] text-white focus:outline-none focus:border-cyan-400"
                     >
-                      <option value="caminhada">Caminhada</option>
-                      <option value="corrida">Corrida</option>
-                      <option value="musculacao">Musculação</option>
-                      <option value="bicicleta">Bicicleta</option>
+                      {ACTIVITIES.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
                     </select>
                     <input
                       type="time"
@@ -643,6 +729,11 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
           )}
 
           {/* ABA 2: PESO E METAS */}
+          {activeTab === 'historico' && (
+            <HistoryTab calorieGoal={goals.calorie_target} targetWeight={Number(targetWeight) || 0} currentWeight={Number(currentWeight) || 0} refreshKey={histKey}
+              onWeightSaved={(kg) => setCurrentWeight(kg)} onAuthError={handleAuthError} />
+          )}
+
           {activeTab === 'metas' && (
             <div className="bg-[#141B2D] border border-gray-800 rounded-2xl p-5 shadow-lg space-y-4 animate-in fade-in duration-200">
               <h2 className="text-sm font-bold text-white">Configurar Peso e Objetivo</h2>
@@ -783,26 +874,25 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
         </main>
 
         {/* Bottom Navigation */}
-        <nav className="absolute bottom-0 left-0 w-full bg-[#0E131F]/95 backdrop-blur-md border-t border-gray-800/80 py-3 px-6 flex justify-around items-center z-40">
-          <button 
-            onClick={() => setActiveTab('diario')} 
-            className={`text-xs font-bold transition flex flex-col items-center gap-1 ${activeTab === 'diario' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}
-          >
-            <span>Diário e IA</span>
-          </button>
-          <button 
-            onClick={() => setActiveTab('metas')} 
-            className={`text-xs font-bold transition flex flex-col items-center gap-1 ${activeTab === 'metas' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}
-          >
-            <span>Peso e Metas</span>
-          </button>
-          <button 
-            onClick={() => setActiveTab('planos')} 
-            className={`text-xs font-bold transition flex flex-col items-center gap-1 ${activeTab === 'planos' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}
-          >
-            <span>Planos e Créditos</span>
-          </button>
+        <nav aria-label="Navegação principal" className="absolute bottom-0 left-0 w-full bg-[#0E131F]/95 backdrop-blur-md border-t border-gray-800/80 py-3 px-3 flex justify-around items-center z-40">
+          <button onClick={() => setActiveTab('diario')} aria-current={activeTab === 'diario' ? 'page' : undefined}
+            className={`text-xs font-bold transition px-2 py-1 ${activeTab === 'diario' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}>Diário</button>
+          <button onClick={() => setActiveTab('historico')} aria-current={activeTab === 'historico' ? 'page' : undefined}
+            className={`text-xs font-bold transition px-2 py-1 ${activeTab === 'historico' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}>Histórico</button>
+          <button onClick={() => setActiveTab('metas')} aria-current={activeTab === 'metas' ? 'page' : undefined}
+            className={`text-xs font-bold transition px-2 py-1 ${activeTab === 'metas' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}>Peso e Metas</button>
+          <button onClick={() => setActiveTab('planos')} aria-current={activeTab === 'planos' ? 'page' : undefined}
+            className={`text-xs font-bold transition px-2 py-1 ${activeTab === 'planos' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-200'}`}>Planos</button>
         </nav>
+
+        {showOnboarding && (
+          <OnboardingModal initial={{ weight: Number(currentWeight) || 70, target: Number(targetWeight) || 65, height: Number(height) || 170, age: Number(age) || 30, gender, activity: ACTIVITY[activityLevel] || 'light' }}
+            onClose={skipOnboarding} onSkip={skipOnboarding} onDone={finishOnboarding} />
+        )}
+        {showExercise && <ExerciseModal weightKg={Number(currentWeight) || 0} onClose={() => setShowExercise(false)} onSaved={() => { setShowExercise(false); refreshDay(); }} />}
+        {showText && <TextMealModal onClose={() => setShowText(false)} onSaved={() => { setShowText(false); refreshDay(); }} />}
+        {editMeal && <MealEditModal meal={editMeal} onClose={() => setEditMeal(null)} onSaved={() => { setEditMeal(null); refreshDay(); }} />}
+        {showClose && <CloseDayModal live={liveTotals} goals={goals} waterMl={waterNow} objective={objective} existing={closure} onClose={() => setShowClose(false)} onClosed={(c) => { setClosure(c); setHistKey((k) => k + 1); }} />}
 
       </div>
     </div>

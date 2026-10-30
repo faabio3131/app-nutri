@@ -12,18 +12,20 @@ import (
 )
 
 type APIHandler struct {
-	mealService  *application.MealService
-	pool         *pgxpool.Pool
-	quota        *application.QuotaService
-	loginByEmail *middlewares.Limiter
+	mealService   *application.MealService
+	pool          *pgxpool.Pool
+	quota         *application.QuotaService
+	loginByEmail  *middlewares.Limiter
+	forgotByEmail *middlewares.Limiter
 }
 
 func NewAPIHandler(ms *application.MealService, pool *pgxpool.Pool, q *application.QuotaService) *APIHandler {
 	return &APIHandler{
-		mealService:  ms,
-		pool:         pool,
-		quota:        q,
-		loginByEmail: middlewares.NewLimiter(8, 15*time.Minute),
+		mealService:   ms,
+		pool:          pool,
+		quota:         q,
+		loginByEmail:  middlewares.NewLimiter(8, 15*time.Minute),
+		forgotByEmail: middlewares.NewLimiter(3, time.Hour),
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/faabio3131/app-nutri/backend/internal/application"
@@ -206,6 +207,192 @@ func (h *APIHandler) DeleteMeal(c *gin.Context) {
 	tag, err := h.pool.Exec(c.Request.Context(), `DELETE FROM meals WHERE id::text=$1 AND user_id=$2`, c.Param("id"), u.ID)
 	if err != nil || tag.RowsAffected() == 0 {
 		fail(c, http.StatusNotFound, "Refeição não encontrada.")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
+
+const (
+	maxTextChars     = 300
+	textLimitTrial   = 5
+	textLimitPaid    = 30
+	textLimitMessage = "Você atingiu o limite de registros por texto de hoje. Tente amanhã ou use a foto."
+)
+
+// AnalyzeText: descrição escrita -> IA -> grava a refeição. Não consome as fotos do plano; tem limite diário próprio.
+func (h *APIHandler) AnalyzeText(c *gin.Context) {
+	u := middlewares.User(c)
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 4<<10)
+	var r struct {
+		Text     string `json:"text"`
+		MealType string `json:"meal_type"`
+	}
+	if err := c.ShouldBindJSON(&r); err != nil {
+		fail(c, http.StatusBadRequest, "Descreva o que você comeu.")
+		return
+	}
+	text := strings.TrimSpace(r.Text)
+	if len([]rune(text)) < 3 {
+		fail(c, http.StatusBadRequest, "Descreva o que você comeu (ex.: 2 ovos mexidos e 1 pão francês).")
+		return
+	}
+	if len([]rune(text)) > maxTextChars {
+		fail(c, http.StatusBadRequest, "Descrição muito longa (máx. 300 caracteres).")
+		return
+	}
+	mealType := r.MealType
+	if !allowedMeal[mealType] {
+		mealType = mealTypeByHour()
+	}
+	ctx := c.Request.Context()
+	usage, err := h.quota.Summary(ctx, u.ID, u.Email)
+	if err != nil {
+		fail(c, http.StatusInternalServerError, "Erro ao processar. Tente novamente.")
+		return
+	}
+	limit := textLimitPaid
+	if usage.Plan == "teste" {
+		limit = textLimitTrial
+	}
+	id, ok, err := h.reserveText(ctx, u.ID, limit)
+	if err != nil {
+		fail(c, http.StatusInternalServerError, "Erro ao processar. Tente novamente.")
+		return
+	}
+	if !ok {
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": textLimitMessage, "code": "text_limit"})
+		return
+	}
+	release := func() {
+		h.pool.Exec(context.Background(), `DELETE FROM photo_analyses WHERE id=$1 AND status='pending'`, id)
+	}
+
+	actx, cancel := context.WithTimeout(ctx, 40*time.Second)
+	defer cancel()
+	type out struct {
+		r   *domain.GeminiResponseSchema
+		err error
+	}
+	ch := make(chan out, 1)
+	go func() {
+		res, e := h.mealService.ProcessMealText(text, "pt-BR")
+		ch <- out{res, e}
+	}()
+	var res out
+	select {
+	case res = <-ch:
+	case <-actx.Done():
+		res.err = gemini.ErrUpstream
+	}
+	if res.err != nil || res.r == nil {
+		release()
+		msg := "Não foi possível analisar agora. Tente novamente."
+		if errors.Is(res.err, gemini.ErrNotConfigured) {
+			msg = "A análise ainda não está disponível. Tente novamente em breve."
+		}
+		fail(c, http.StatusBadGateway, msg)
+		return
+	}
+	if len(res.r.Items) == 0 || res.r.MealSummary.TotalCalories <= 0 {
+		release()
+		fail(c, http.StatusUnprocessableEntity, "Não reconheci alimentos nessa descrição. Tente algo como: arroz, feijão e 1 bife.")
+		return
+	}
+	mealID, err := h.saveMeal(ctx, u.ID, mealType, res.r)
+	if err != nil {
+		release()
+		fail(c, http.StatusInternalServerError, "Erro ao salvar a refeição. Tente novamente.")
+		return
+	}
+	h.pool.Exec(ctx, `UPDATE photo_analyses SET status='ok' WHERE id=$1`, id)
+	c.JSON(http.StatusOK, gin.H{
+		"status":    "success",
+		"meal_id":   mealID,
+		"meal_type": mealType,
+		"data":      gin.H{"meal_summary": res.r.MealSummary, "items": res.r.Items},
+	})
+}
+
+// reserveText reserva 1 uso diário de texto de forma atômica (lock por usuário).
+func (h *APIHandler) reserveText(ctx context.Context, userID string, limit int) (string, bool, error) {
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		return "", false, err
+	}
+	defer tx.Rollback(ctx)
+	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "text:"+userID); err != nil {
+		return "", false, err
+	}
+	tx.Exec(ctx, `DELETE FROM photo_analyses WHERE user_id=$1 AND source='text' AND status='pending' AND created_at < now() - interval '3 minutes'`, userID)
+	var n int
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM photo_analyses WHERE user_id=$1 AND source='text' AND status IN ('ok','pending')
+		AND (created_at AT TIME ZONE 'America/Sao_Paulo')::date = (now() AT TIME ZONE 'America/Sao_Paulo')::date`, userID).Scan(&n); err != nil {
+		return "", false, err
+	}
+	if n >= limit {
+		return "", false, nil
+	}
+	var id string
+	if err := tx.QueryRow(ctx, `INSERT INTO photo_analyses(user_id, source) VALUES($1,'text') RETURNING id::text`, userID).Scan(&id); err != nil {
+		return "", false, err
+	}
+	return id, true, tx.Commit(ctx)
+}
+
+// UpdateMeal ajusta a porção (fator ¼x–4x) e/ou o nome de uma refeição já registrada. Não gasta foto nem IA.
+func (h *APIHandler) UpdateMeal(c *gin.Context) {
+	u := middlewares.User(c)
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 2<<10)
+	var r struct {
+		Factor *float64 `json:"factor"`
+		Name   *string  `json:"name"`
+	}
+	if err := c.ShouldBindJSON(&r); err != nil || (r.Factor == nil && r.Name == nil) {
+		fail(c, http.StatusBadRequest, "Nada para alterar.")
+		return
+	}
+	ctx := c.Request.Context()
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		fail(c, http.StatusInternalServerError, "Erro ao atualizar.")
+		return
+	}
+	defer tx.Rollback(ctx)
+	var exists bool
+	if err := tx.QueryRow(ctx, `SELECT true FROM meals WHERE id::text=$1 AND user_id=$2 FOR UPDATE`, c.Param("id"), u.ID).Scan(&exists); err != nil {
+		fail(c, http.StatusNotFound, "Refeição não encontrada.")
+		return
+	}
+	if r.Name != nil {
+		name := strings.TrimSpace(*r.Name)
+		if name == "" || len([]rune(name)) > 120 {
+			fail(c, http.StatusBadRequest, "Nome inválido (1 a 120 caracteres).")
+			return
+		}
+		if _, err := tx.Exec(ctx, `UPDATE meals SET name=$1 WHERE id::text=$2 AND user_id=$3`, name, c.Param("id"), u.ID); err != nil {
+			fail(c, http.StatusInternalServerError, "Erro ao atualizar.")
+			return
+		}
+	}
+	if r.Factor != nil {
+		if !domain.ScaleFactorValid(*r.Factor) {
+			fail(c, http.StatusBadRequest, "Porção entre ¼x e 4x.")
+			return
+		}
+		f := *r.Factor
+		if _, err := tx.Exec(ctx, `UPDATE meals SET total_calories=LEAST(total_calories*$1,9999.99), total_protein_g=LEAST(total_protein_g*$1,9999.99),
+			total_carbs_g=LEAST(total_carbs_g*$1,9999.99), total_fat_g=LEAST(total_fat_g*$1,9999.99) WHERE id::text=$2 AND user_id=$3`, f, c.Param("id"), u.ID); err != nil {
+			fail(c, http.StatusInternalServerError, "Erro ao atualizar.")
+			return
+		}
+		if _, err := tx.Exec(ctx, `UPDATE meal_items SET estimated_weight_g=LEAST(estimated_weight_g*$1,9999.99), calories=LEAST(calories*$1,9999.99),
+			protein_g=LEAST(protein_g*$1,9999.99), carbs_g=LEAST(carbs_g*$1,9999.99), fat_g=LEAST(fat_g*$1,9999.99) WHERE meal_id::text=$2`, f, c.Param("id")); err != nil {
+			fail(c, http.StatusInternalServerError, "Erro ao atualizar.")
+			return
+		}
+	}
+	if err := tx.Commit(ctx); err != nil {
+		fail(c, http.StatusInternalServerError, "Erro ao atualizar.")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
