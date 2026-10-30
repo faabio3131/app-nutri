@@ -8,7 +8,7 @@ const h2 = 'text-base font-bold text-white pt-2';
 export default function Privacidade() {
   return (
     <LegalPage title="Política de Privacidade" version="2026-10-30">
-      <p>Esta Política explica como a FM Tecnologia IA LTDA (&quot;controladora&quot;) trata dados pessoais no NutriSnap IA, em conformidade com a Lei Geral de Proteção de Dados (Lei 13.709/2018, LGPD).</p>
+      <p>Esta Política explica como a FM Tecnologia IA (FM Tecnologia LTDA, CNPJ 07.109.248/0001-57) (&quot;controladora&quot;) trata dados pessoais no NutriSnap IA, em conformidade com a Lei Geral de Proteção de Dados (Lei 13.709/2018, LGPD).</p>
 
       <h2 className={h2}>1. Dados que tratamos</h2>
       <ul className="list-disc pl-5 space-y-1">
@@ -16,7 +16,7 @@ export default function Privacidade() {
         <li><strong>Saúde e hábitos (dados sensíveis):</strong> peso atual e objetivo, altura, idade, sexo biológico, nível de atividade, metas calculadas, refeições e valores nutricionais estimados, consumo de água e rotina de treinos que você registrar.</li>
         <li><strong>Fotos de pratos:</strong> enviadas apenas para análise. <strong>Nós não armazenamos as fotos</strong>; guardamos somente o resultado (nome do prato, calorias, macros e itens).</li>
         <li><strong>Assinatura:</strong> recebemos da Cakto seu e-mail, o plano contratado, o identificador do pedido e o status do pagamento. Não recebemos nem guardamos dados de cartão.</li>
-        <li><strong>Técnicos:</strong> endereço IP, data/hora e dados do dispositivo nos registros de acesso, para segurança e prevenção a fraudes.</li>
+        <li><strong>Técnicos (registros de acesso):</strong> endereço IP, data e hora, rota acessada, resultado da requisição, identificador da sua conta (quando logado) e tipo de navegador. Não guardamos o conteúdo das suas refeições nesses registros.</li>
       </ul>
 
       <h2 className={h2}>2. Para que usamos e base legal</h2>
@@ -37,7 +37,8 @@ export default function Privacidade() {
       </ul>
 
       <h2 className={h2}>4. Por quanto tempo guardamos</h2>
-      <p>Enquanto sua conta existir. Ao excluir a conta, apagamos seus dados pessoais, refeições, metas e sessões. Mantemos apenas o que a lei exigir (por exemplo, registros de acesso) e, se houver assinatura ainda vigente, o mínimo necessário para honrá-la até o fim do período pago. Cópias de segurança são rotacionadas e deixam de conter os dados em até 14 dias.</p>
+      <p>Enquanto sua conta existir. Ao excluir a conta, apagamos seus dados pessoais, refeições, metas e sessões. Mantemos apenas o que a lei exigir (por exemplo, os registros de acesso, veja abaixo) e, se houver assinatura ainda vigente, o mínimo necessário para honrá-la até o fim do período pago. Cópias de segurança são rotacionadas e deixam de conter os dados em até 14 dias.</p>
+      <p><strong>Registros de acesso:</strong> conforme o art. 15 do Marco Civil da Internet (Lei 12.965/2014), guardamos os registros de acesso à aplicação, em ambiente controlado e em sigilo, por no mínimo 6 meses (mantemos por até 200 dias, depois apagamos automaticamente). Eles só são entregues a autoridades mediante ordem judicial ou quando a lei exigir, e permanecem mesmo que você exclua a conta, pois essa guarda é obrigação legal.</p>
 
       <h2 className={h2}>5. Seus direitos (art. 18 da LGPD)</h2>
       <p>Você pode: confirmar que tratamos seus dados, acessá-los, corrigi-los, pedir anonimização, bloqueio ou eliminação, solicitar portabilidade, saber com quem compartilhamos, ser informado sobre consequências de não consentir e revogar o consentimento. No aplicativo, aba <strong>Planos → Minha conta</strong>, você baixa todos os seus dados em arquivo e exclui a conta com sua senha. Para os demais pedidos, escreva para o canal abaixo; respondemos em até 15 dias.</p>
@@ -52,7 +53,7 @@ export default function Privacidade() {
       <p>Não usamos cookies de publicidade. Guardamos no seu navegador apenas o token de sessão necessário para você continuar conectado.</p>
 
       <h2 className={h2}>9. Encarregado e contato</h2>
-      <p>Controladora: FM Tecnologia IA LTDA. Canal do Encarregado de dados e de titulares: contato@fmtecnologiaia.com.br. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
+      <p>Controladora: FM Tecnologia IA (FM Tecnologia LTDA, CNPJ 07.109.248/0001-57). Canal do Encarregado de dados e de titulares: contato@fmtecnologiaia.com.br. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
 
       <h2 className={h2}>10. Alterações</h2>
       <p>Podemos atualizar esta Política; mudanças relevantes serão avisadas no aplicativo ou por e-mail, e a versão vigente fica sempre nesta página.</p>

@@ -273,7 +273,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="space-y-2 border-t border-white/10 py-10 pb-24 text-center text-xs text-gray-400 md:pb-10">
-        <p>&copy; 2026 NutriSnap IA - FM Tecnologia IA LTDA. Todos os direitos reservados.</p>
+        <p>&copy; 2026 NutriSnap IA - FM Tecnologia IA &middot; FM Tecnologia LTDA &middot; CNPJ 07.109.248/0001-57. Todos os direitos reservados.</p>
         <p>WhatsApp: (11) 97835-0851 | E-mail: contato@fmtecnologiaia.com.br</p>
         <p><a className="underline" href="/termos/">Termos de Uso</a> • <a className="underline" href="/privacidade/">Política de Privacidade</a></p>
         <p className="mx-auto max-w-xl px-5">As estimativas são feitas por IA, são aproximadas e não substituem orientação de nutricionista ou médico.</p>

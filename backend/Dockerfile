@@ -7,7 +7,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-w -s" -o /out/server ./cmd/api
 
 FROM alpine:3.20
-RUN apk add --no-cache ca-certificates tzdata wget && adduser -D -u 10001 app
+RUN apk add --no-cache ca-certificates tzdata wget && adduser -D -u 10001 app && mkdir -p /var/log/nutrisnap && chown app /var/log/nutrisnap
 ENV TZ=America/Sao_Paulo
 WORKDIR /app
 COPY --from=builder /out/server .

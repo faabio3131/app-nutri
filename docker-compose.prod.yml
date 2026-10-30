@@ -11,6 +11,9 @@ services:
     environment:
       PORT: "8080"
       GIN_MODE: release
+      ACCESS_LOG_DIR: /var/log/nutrisnap
+    volumes:
+      - nutrisnap-accesslogs:/var/log/nutrisnap
     expose: ["8080"]
     mem_limit: 256m
     cpus: 1.0
@@ -50,6 +53,7 @@ services:
 
 volumes:
   nutrisnap-pgdata:
+  nutrisnap-accesslogs:
 
 networks:
   nutrisnap: {}

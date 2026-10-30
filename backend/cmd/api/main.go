@@ -37,7 +37,7 @@ func main() {
 	}
 
 	router := gin.New()
-	router.Use(gin.Recovery(), gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api/v1/health"}}))
+	router.Use(gin.Recovery(), gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api/v1/health"}}), middlewares.AccessLog(os.Getenv("ACCESS_LOG_DIR")))
 	// O proxy (Nginx Proxy Manager) está na rede Docker privada: só ele pode informar o IP real do cliente.
 	router.SetTrustedProxies([]string{"172.16.0.0/12", "10.0.0.0/8", "192.168.0.0/16", "127.0.0.1"})
 
