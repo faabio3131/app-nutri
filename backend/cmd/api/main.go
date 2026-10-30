@@ -1,4 +1,4 @@
-﻿package main
+package main
 
 import (
     "log"
@@ -18,9 +18,16 @@ func main() {
 
     router := gin.Default()
 
+    // CORS restrito ao domínio do app (CORS_ORIGIN); "*" só no desenvolvimento local.
+    allowedOrigin := os.Getenv("CORS_ORIGIN")
+    if allowedOrigin == "" {
+        allowedOrigin = "*"
+    }
+
     // Middleware CORS para permitir chamadas do Frontend Next.js
     router.Use(func(c *gin.Context) {
-        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+        c.Writer.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
+        c.Writer.Header().Set("Vary", "Origin")
         c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
         c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept-Language")
         if c.Request.Method == "OPTIONS" {
@@ -42,6 +49,7 @@ func main() {
         })
         v1.POST("/meals/analyze", apiHandler.AnalyzeMeal)
         v1.POST("/nutrition/calculate", apiHandler.CalculateTDEE)
+        v1.POST("/workouts", apiHandler.RegisterWorkout)
     }
 
     port := os.Getenv("PORT")
