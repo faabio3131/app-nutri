@@ -37,7 +37,7 @@ func main() {
 	}
 
 	router := gin.New()
-	router.Use(gin.Recovery(), gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api/v1/health"}}))
+	router.Use(gin.Recovery(), gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api/v1/health"}}), middlewares.AccessLog(os.Getenv("ACCESS_LOG_DIR")))
 	// O proxy (Nginx Proxy Manager) está na rede Docker privada: só ele pode informar o IP real do cliente.
 	router.SetTrustedProxies([]string{"172.16.0.0/12", "10.0.0.0/8", "192.168.0.0/16", "127.0.0.1"})
 
@@ -49,7 +49,7 @@ func main() {
 		h := c.Writer.Header()
 		h.Set("Access-Control-Allow-Origin", allowedOrigin)
 		h.Set("Vary", "Origin")
-		h.Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS")
+		h.Set("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE, OPTIONS")
 		h.Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		h.Set("Access-Control-Max-Age", "600")
 		h.Set("X-Content-Type-Options", "nosniff")
@@ -72,6 +72,8 @@ func main() {
 	signupLimit := middlewares.NewLimiter(signupMax, time.Hour)
 	loginLimit := middlewares.NewLimiter(30, 15*time.Minute)
 	calcLimit := middlewares.NewLimiter(120, time.Minute)
+	forgotLimit := middlewares.NewLimiter(10, 15*time.Minute)
+	textLimit := middlewares.NewLimiter(30, time.Minute)
 
 	v1 := router.Group("/api/v1")
 	{
@@ -86,6 +88,9 @@ func main() {
 		})
 		v1.POST("/auth/signup", signupLimit.ByIP(), api.Signup)
 		v1.POST("/auth/login", loginLimit.ByIP(), api.Login)
+		v1.GET("/config", api.Config)
+		v1.POST("/auth/forgot", forgotLimit.ByIP(), api.ForgotPassword)
+		v1.POST("/auth/reset", forgotLimit.ByIP(), api.ResetPassword)
 		v1.POST("/webhooks/cakto", api.HandleCaktoWebhook)
 
 		priv := v1.Group("/", auth)
@@ -93,9 +98,18 @@ func main() {
 		priv.POST("/auth/logout", api.Logout)
 		priv.POST("/meals/analyze", api.AnalyzeMeal)
 		priv.GET("/meals", api.ListMeals)
+		priv.POST("/meals/text", textLimit.ByIP(), api.AnalyzeText)
+		priv.PATCH("/meals/:id", api.UpdateMeal)
 		priv.DELETE("/meals/:id", api.DeleteMeal)
 		priv.POST("/nutrition/calculate", calcLimit.ByIP(), api.CalculateTDEE)
 		priv.POST("/workouts", calcLimit.ByIP(), api.RegisterWorkout)
+		priv.GET("/workouts", api.ListWorkouts)
+		priv.DELETE("/workouts/by-ref", api.DeleteWorkoutByRef)
+		priv.DELETE("/workouts/:id", api.DeleteWorkout)
+		priv.GET("/days/summary", api.DaySummary)
+		priv.POST("/days/close", api.CloseDay)
+		priv.GET("/history", api.History)
+		priv.POST("/weight", calcLimit.ByIP(), api.LogWeight)
 		priv.GET("/state", api.GetState)
 		priv.PUT("/state", api.PutState)
 		priv.GET("/account/export", api.ExportAccount)

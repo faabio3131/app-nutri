@@ -18,3 +18,7 @@ func NewMealService(gClient *gemini.Client) *MealService {
 func (s *MealService) ProcessMealPhoto(imageBytes []byte, mimeType string, locale string) (*domain.GeminiResponseSchema, error) {
 	return s.geminiClient.AnalyzeMealImage(imageBytes, mimeType, locale)
 }
+
+func (s *MealService) ProcessMealText(text string, locale string) (*domain.GeminiResponseSchema, error) {
+	return s.geminiClient.AnalyzeMealText(text, locale)
+}

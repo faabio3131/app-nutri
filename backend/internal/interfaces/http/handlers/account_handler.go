@@ -38,6 +38,34 @@ func (h *APIHandler) ExportAccount(c *gin.Context) {
 	}
 	rows.Close()
 	out["meals"] = meals
+	// Exercícios, peso e fechamentos do dia
+	wk := []gin.H{}
+	if r2, err := h.pool.Query(ctx, `SELECT activity, duration_min, intensity, calories_burned, performed_at FROM workout_logs WHERE user_id=$1 ORDER BY performed_at`, u.ID); err == nil {
+		for r2.Next() {
+			var a, in string
+			var d, k int
+			var at time.Time
+			if r2.Scan(&a, &d, &in, &k, &at) == nil {
+				wk = append(wk, gin.H{"activity": a, "duration_min": d, "intensity": in, "calories_burned": k, "performed_at": at})
+			}
+		}
+		r2.Close()
+	}
+	out["workouts"] = wk
+	out["weights"] = h.weights(ctx, u.ID, 3650)
+	cl := []gin.H{}
+	if r3, err := h.pool.Query(ctx, `SELECT day::text, consumed_kcal, burned_kcal, net_kcal, goal_kcal, verdict, closed_at FROM day_closures WHERE user_id=$1 ORDER BY day`, u.ID); err == nil {
+		for r3.Next() {
+			var d, v string
+			var c1, b, n, g int
+			var at time.Time
+			if r3.Scan(&d, &c1, &b, &n, &g, &v, &at) == nil {
+				cl = append(cl, gin.H{"day": d, "consumed_kcal": c1, "burned_kcal": b, "net_kcal": n, "goal_kcal": g, "verdict": v, "closed_at": at})
+			}
+		}
+		r3.Close()
+	}
+	out["day_closures"] = cl
 	var state []byte
 	if h.pool.QueryRow(ctx, `SELECT data FROM user_state WHERE user_id=$1`, u.ID).Scan(&state) == nil {
 		out["state"] = string(state)
