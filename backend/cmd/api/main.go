@@ -1,64 +1,130 @@
 package main
 
 import (
-    "log"
-    "net/http"
-    "os"
+	"context"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"strconv"
+	"syscall"
+	"time"
 
-    "github.com/faabio3131/app-nutri/backend/internal/application"
-    "github.com/faabio3131/app-nutri/backend/internal/infrastructure/gemini"
-    "github.com/faabio3131/app-nutri/backend/internal/interfaces/http/handlers"
-    "github.com/gin-gonic/gin"
+	"github.com/faabio3131/app-nutri/backend/internal/application"
+	"github.com/faabio3131/app-nutri/backend/internal/infrastructure/database"
+	"github.com/faabio3131/app-nutri/backend/internal/infrastructure/gemini"
+	"github.com/faabio3131/app-nutri/backend/internal/interfaces/http/handlers"
+	"github.com/faabio3131/app-nutri/backend/internal/interfaces/middlewares"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-    if os.Getenv("GIN_MODE") == "release" {
-        gin.SetMode(gin.ReleaseMode)
-    }
+	if os.Getenv("GIN_MODE") == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		log.Fatal("DATABASE_URL é obrigatória")
+	}
+	ctx := context.Background()
+	pool, err := database.Connect(ctx, dbURL)
+	if err != nil {
+		log.Fatalf("banco: %v", err)
+	}
+	defer pool.Close()
+	if err := database.Migrate(ctx, pool); err != nil {
+		log.Fatalf("migrações: %v", err)
+	}
 
-    router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Recovery(), gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api/v1/health"}}))
+	// O proxy (Nginx Proxy Manager) está na rede Docker privada: só ele pode informar o IP real do cliente.
+	router.SetTrustedProxies([]string{"172.16.0.0/12", "10.0.0.0/8", "192.168.0.0/16", "127.0.0.1"})
 
-    // CORS restrito ao domínio do app (CORS_ORIGIN); "*" só no desenvolvimento local.
-    allowedOrigin := os.Getenv("CORS_ORIGIN")
-    if allowedOrigin == "" {
-        allowedOrigin = "*"
-    }
+	allowedOrigin := os.Getenv("CORS_ORIGIN")
+	if allowedOrigin == "" {
+		allowedOrigin = "*"
+	}
+	router.Use(func(c *gin.Context) {
+		h := c.Writer.Header()
+		h.Set("Access-Control-Allow-Origin", allowedOrigin)
+		h.Set("Vary", "Origin")
+		h.Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS")
+		h.Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		h.Set("Access-Control-Max-Age", "600")
+		h.Set("X-Content-Type-Options", "nosniff")
+		h.Set("Cache-Control", "no-store")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+		c.Next()
+	})
 
-    // Middleware CORS para permitir chamadas do Frontend Next.js
-    router.Use(func(c *gin.Context) {
-        c.Writer.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
-        c.Writer.Header().Set("Vary", "Origin")
-        c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-        c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept-Language")
-        if c.Request.Method == "OPTIONS" {
-            c.AbortWithStatus(http.StatusNoContent)
-            return
-        }
-        c.Next()
-    })
+	quota := application.NewQuotaService(pool)
+	mealService := application.NewMealService(gemini.NewClient())
+	api := handlers.NewAPIHandler(mealService, pool, quota)
+	auth := middlewares.RequireAuth(pool)
+	signupMax := 5
+	if v, err := strconv.Atoi(os.Getenv("SIGNUP_LIMIT_PER_HOUR")); err == nil && v > 0 {
+		signupMax = v
+	}
+	signupLimit := middlewares.NewLimiter(signupMax, time.Hour)
+	loginLimit := middlewares.NewLimiter(30, 15*time.Minute)
+	calcLimit := middlewares.NewLimiter(120, time.Minute)
 
-    // Injeção de Dependências (Clean Architecture)
-    geminiClient := gemini.NewClient()
-    mealService := application.NewMealService(geminiClient)
-    apiHandler := handlers.NewAPIHandler(mealService)
+	v1 := router.Group("/api/v1")
+	{
+		v1.GET("/health", func(c *gin.Context) {
+			pctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
+			defer cancel()
+			if err := pool.Ping(pctx); err != nil {
+				c.JSON(http.StatusServiceUnavailable, gin.H{"status": "db_down"})
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{"status": "online", "service": "app-nutri-api"})
+		})
+		v1.POST("/auth/signup", signupLimit.ByIP(), api.Signup)
+		v1.POST("/auth/login", loginLimit.ByIP(), api.Login)
+		v1.POST("/webhooks/cakto", api.HandleCaktoWebhook)
 
-    v1 := router.Group("/api/v1")
-    {
-        v1.GET("/health", func(c *gin.Context) {
-            c.JSON(http.StatusOK, gin.H{"status": "online", "service": "app-nutri-api"})
-        })
-        v1.POST("/meals/analyze", apiHandler.AnalyzeMeal)
-        v1.POST("/nutrition/calculate", apiHandler.CalculateTDEE)
-        v1.POST("/workouts", apiHandler.RegisterWorkout)
-    }
+		priv := v1.Group("/", auth)
+		priv.GET("/me", api.Me)
+		priv.POST("/auth/logout", api.Logout)
+		priv.POST("/meals/analyze", api.AnalyzeMeal)
+		priv.GET("/meals", api.ListMeals)
+		priv.DELETE("/meals/:id", api.DeleteMeal)
+		priv.POST("/nutrition/calculate", calcLimit.ByIP(), api.CalculateTDEE)
+		priv.POST("/workouts", calcLimit.ByIP(), api.RegisterWorkout)
+		priv.GET("/state", api.GetState)
+		priv.PUT("/state", api.PutState)
+		priv.GET("/account/export", api.ExportAccount)
+		priv.DELETE("/account", api.DeleteAccount)
+	}
 
-    port := os.Getenv("PORT")
-    if port == "" {
-        port = "8080"
-    }
-
-    log.Printf("🚀 App-Nutri API rodando na porta %s", port)
-    if err := router.Run(":" + port); err != nil {
-        log.Fatalf("Erro ao iniciar servidor: %v", err)
-    }
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	srv := &http.Server{
+		Addr:              ":" + port,
+		Handler:           router,
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       60 * time.Second,
+		WriteTimeout:      90 * time.Second,
+		IdleTimeout:       120 * time.Second,
+		MaxHeaderBytes:    16 << 10,
+	}
+	go func() {
+		log.Printf("App-Nutri API na porta %s", port)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("servidor: %v", err)
+		}
+	}()
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+	<-stop
+	shutdown, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	srv.Shutdown(shutdown)
 }
