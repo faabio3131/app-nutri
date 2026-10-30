@@ -55,4 +55,4 @@ networks:
   nutrisnap: {}
   proxy:
     external: true
-    name: ${PROXY_NETWORK:-proxy}
+    name: ${PROXY_NETWORK:-proxy-net}
