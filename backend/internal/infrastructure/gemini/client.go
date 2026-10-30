@@ -1,47 +1,66 @@
 package gemini
 
 import (
-    "bytes"
-    "encoding/base64"
-    "encoding/json"
-    "fmt"
-    "io"
-    "net/http"
-    "os"
-    "time"
+	"bytes"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"time"
 
-    "github.com/faabio3131/app-nutri/backend/internal/domain"
+	"github.com/faabio3131/app-nutri/backend/internal/domain"
 )
 
 type Client struct {
-    apiKey     string
-    model      string
-    httpClient *http.Client
+	apiKey     string
+	models     []string
+	baseURL    string
+	httpClient *http.Client
 }
 
+// ErrNotConfigured indica que a chave da Gemini não foi instalada.
+var ErrNotConfigured = fmt.Errorf("serviço de análise não configurado")
+
+// ErrUpstream é qualquer falha do provedor de IA (sem detalhes sensíveis).
+var ErrUpstream = fmt.Errorf("falha no provedor de análise")
+
 func NewClient() *Client {
-    model := os.Getenv("GEMINI_MODEL")
-    if model == "" {
-        model = "gemini-2.0-flash"
-    }
-    return &Client{
-        apiKey: os.Getenv("GEMINI_API_KEY"),
-        model:  model,
-        httpClient: &http.Client{
-            Timeout: 25 * time.Second,
-        },
-    }
+	// gemini-2.0-flash tem desligamento programado (jun/2026); padrão atual: 3.6 Flash.
+	models := []string{}
+	for _, m := range []string{os.Getenv("GEMINI_MODEL"), os.Getenv("GEMINI_FALLBACK_MODEL")} {
+		if m != "" {
+			models = append(models, m)
+		}
+	}
+	if len(models) == 0 {
+		models = []string{"gemini-3.6-flash", "gemini-2.5-flash"}
+	}
+	base := os.Getenv("GEMINI_BASE_URL")
+	if base == "" {
+		base = "https://generativelanguage.googleapis.com"
+	}
+	return &Client{
+		apiKey:  os.Getenv("GEMINI_API_KEY"),
+		models:  models,
+		baseURL: base,
+		httpClient: &http.Client{
+			Timeout: 25 * time.Second,
+		},
+	}
 }
 
 func (c *Client) AnalyzeMealImage(imageBytes []byte, mimeType string, locale string) (*domain.GeminiResponseSchema, error) {
-    if c.apiKey == "" {
-        return nil, fmt.Errorf("GEMINI_API_KEY nao configurada no ambiente")
-    }
-    if locale == "" {
-        locale = "pt-BR"
-    }
+	if c.apiKey == "" {
+		return nil, ErrNotConfigured
+	}
+	if locale == "" {
+		locale = "pt-BR"
+	}
 
-    prompt := fmt.Sprintf(`Voce e um nutricionista especialista em visao computacional e analise volumetrica de alimentos.
+	prompt := fmt.Sprintf(`Voce e um nutricionista especialista em visao computacional e analise volumetrica de alimentos.
 Analise a foto do prato e retorne ESTRITAMENTE um objeto JSON valido seguindo esta estrutura exata:
 {
   "meal_summary": {
@@ -66,78 +85,132 @@ Analise a foto do prato e retorne ESTRITAMENTE um objeto JSON valido seguindo es
 }
 Idioma obrigatorio para todos os textos de retorno: %s. Use a tabela TACO/TBCA como referencia nutricional.`, locale)
 
-    b64Image := base64.StdEncoding.EncodeToString(imageBytes)
+	b64Image := base64.StdEncoding.EncodeToString(imageBytes)
 
-    payload := map[string]interface{}{
-        "contents": []map[string]interface{}{
-            {
-                "parts": []map[string]interface{}{
-                    {"text": prompt},
-                    {
-                        "inline_data": map[string]string{
-                            "mime_type": mimeType,
-                            "data":      b64Image,
-                        },
-                    },
-                },
-            },
-        },
-        "generationConfig": map[string]interface{}{
-            "response_mime_type": "application/json",
-            "temperature":        0.2,
-        },
-    }
+	payload := map[string]interface{}{
+		"contents": []map[string]interface{}{
+			{
+				"parts": []map[string]interface{}{
+					{"text": prompt},
+					{
+						"inline_data": map[string]string{
+							"mime_type": mimeType,
+							"data":      b64Image,
+						},
+					},
+				},
+			},
+		},
+		"generationConfig": map[string]interface{}{
+			"response_mime_type": "application/json",
+			"temperature":        0.2,
+		},
+	}
 
-    bodyBytes, err := json.Marshal(payload)
-    if err != nil {
-        return nil, err
-    }
+	bodyBytes, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
 
-    url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s", c.model, c.apiKey)
-    req, err := http.NewRequest("POST", url, bytes.NewBuffer(bodyBytes))
-    if err != nil {
-        return nil, err
-    }
-    req.Header.Set("Content-Type", "application/json")
+	var lastErr error = ErrUpstream
+	for _, model := range c.models {
+		result, retry, err := c.call(model, bodyBytes)
+		if err == nil {
+			return result, nil
+		}
+		lastErr = err
+		if !retry {
+			break
+		}
+	}
+	return nil, lastErr
+}
 
-    resp, err := c.httpClient.Do(req)
-    if err != nil {
-        return nil, err
-    }
-    defer resp.Body.Close()
+// call faz uma chamada; retry=true quando vale tentar o modelo seguinte (modelo inexistente/indisponível).
+// A chave vai em cabeçalho (nunca na URL) e nenhum corpo do provedor é devolvido ao cliente.
+func (c *Client) call(model string, body []byte) (*domain.GeminiResponseSchema, bool, error) {
+	url := fmt.Sprintf("%s/v1beta/models/%s:generateContent", c.baseURL, model)
+	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
+	if err != nil {
+		return nil, false, ErrUpstream
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("x-goog-api-key", c.apiKey)
 
-    respBody, err := io.ReadAll(resp.Body)
-    if err != nil {
-        return nil, err
-    }
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		log.Printf("gemini: erro de rede (modelo %s)", model)
+		return nil, false, ErrUpstream
+	}
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(io.LimitReader(resp.Body, 4<<20))
+	if err != nil {
+		return nil, false, ErrUpstream
+	}
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("gemini: status %d (modelo %s)", resp.StatusCode, model)
+		return nil, resp.StatusCode == 404 || resp.StatusCode == 403 || resp.StatusCode == 400 || resp.StatusCode == 503, ErrUpstream
+	}
 
-    if resp.StatusCode != http.StatusOK {
-        return nil, fmt.Errorf("erro na API Gemini (status %d): %s", resp.StatusCode, string(respBody))
-    }
+	var rawResp struct {
+		Candidates []struct {
+			Content struct {
+				Parts []struct {
+					Text string `json:"text"`
+				} `json:"parts"`
+			} `json:"content"`
+		} `json:"candidates"`
+	}
+	if err := json.Unmarshal(respBody, &rawResp); err != nil ||
+		len(rawResp.Candidates) == 0 || len(rawResp.Candidates[0].Content.Parts) == 0 {
+		return nil, false, ErrUpstream
+	}
+	var result domain.GeminiResponseSchema
+	if err := json.Unmarshal([]byte(rawResp.Candidates[0].Content.Parts[0].Text), &result); err != nil {
+		return nil, false, ErrUpstream
+	}
+	return sanitize(&result), false, nil
+}
 
-    var rawResp struct {
-        Candidates []struct {
-            Content struct {
-                Parts []struct {
-                    Text string `json:"text"`
-                } `json:"parts"`
-            } `json:"content"`
-        } `json:"candidates"`
-    }
+func clamp(v, hi float64) float64 {
+	if v < 0 || v != v {
+		return 0
+	}
+	if v > hi {
+		return hi
+	}
+	return v
+}
 
-    if err := json.Unmarshal(respBody, &rawResp); err != nil {
-        return nil, err
-    }
+func cut(s string, n int) string {
+	r := []rune(s)
+	if len(r) > n {
+		return string(r[:n])
+	}
+	return s
+}
 
-    if len(rawResp.Candidates) == 0 || len(rawResp.Candidates[0].Content.Parts) == 0 {
-        return nil, fmt.Errorf("resposta vazia do modelo Gemini")
-    }
-
-    jsonText := rawResp.Candidates[0].Content.Parts[0].Text
-    var result domain.GeminiResponseSchema
-    if err := json.Unmarshal([]byte(jsonText), &result); err != nil {
-        return nil, fmt.Errorf("falha ao decodificar JSON estruturado: %v", err)
-    }
-
-    return &result, nil
+// sanitize limita valores e textos vindos do modelo antes de gravar/mostrar.
+func sanitize(r *domain.GeminiResponseSchema) *domain.GeminiResponseSchema {
+	m := &r.MealSummary
+	m.Name = cut(m.Name, 120)
+	m.Notes = cut(m.Notes, 400)
+	m.ConfidenceLevel = cut(m.ConfidenceLevel, 20)
+	m.TotalCalories = clamp(m.TotalCalories, 5000)
+	m.TotalProteinG = clamp(m.TotalProteinG, 500)
+	m.TotalCarbsG = clamp(m.TotalCarbsG, 800)
+	m.TotalFatG = clamp(m.TotalFatG, 500)
+	if len(r.Items) > 30 {
+		r.Items = r.Items[:30]
+	}
+	for i := range r.Items {
+		it := &r.Items[i]
+		it.Name = cut(it.Name, 120)
+		it.EstimatedWeightG = clamp(it.EstimatedWeightG, 3000)
+		it.Calories = clamp(it.Calories, 5000)
+		it.ProteinG = clamp(it.ProteinG, 500)
+		it.CarbsG = clamp(it.CarbsG, 800)
+		it.FatG = clamp(it.FatG, 500)
+	}
+	return r
 }
