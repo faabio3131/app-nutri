@@ -8,7 +8,7 @@ const h2 = 'text-base font-bold text-white pt-2';
 export default function Termos() {
   return (
     <LegalPage title="Termos de Uso" version="2026-10-30">
-      <p>Estes Termos regem o uso do NutriSnap IA (&quot;Serviço&quot;), oferecido pela FM Tecnologia IA (FM Tecnologia LTDA, CNPJ 07.109.248/0001-57) (&quot;nós&quot;). Ao criar uma conta você declara que leu e aceita estes Termos e a Política de Privacidade.</p>
+      <p>Estes Termos regem o uso do NutriSnap IA (&quot;Serviço&quot;), oferecido pela FM Tecnologia IA LTDA (CNPJ 07.109.248/0001-57) (&quot;nós&quot;). Ao criar uma conta você declara que leu e aceita estes Termos e a Política de Privacidade.</p>
 
       <h2 className={h2}>1. O que é o Serviço</h2>
       <p>O NutriSnap IA estima calorias e macronutrientes de refeições a partir de fotos, mantém um diário alimentar, calcula metas de calorias, macros e água e oferece lembretes e agenda de treinos.</p>

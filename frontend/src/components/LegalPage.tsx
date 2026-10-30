@@ -4,7 +4,7 @@ export default function LegalPage({ title, version, children }: { title: string;
       <article className="max-w-2xl mx-auto text-sm leading-relaxed space-y-4">
         <a href="/" className="text-xs text-cyan-400 underline">← Voltar ao NutriSnap IA</a>
         <h1 className="text-2xl font-black text-white">{title}</h1>
-        <p className="text-xs text-gray-500">Versão {version} • FM Tecnologia IA &middot; CNPJ 07.109.248/0001-57</p>
+        <p className="text-xs text-gray-500">Versão {version} • FM Tecnologia IA LTDA &middot; CNPJ 07.109.248/0001-57</p>
         {children}
         <p className="text-xs text-gray-500 pt-6 border-t border-gray-800">Dúvidas ou pedidos: contato@fmtecnologiaia.com.br • WhatsApp (11) 97835-0851</p>
       </article>

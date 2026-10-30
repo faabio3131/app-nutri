@@ -8,7 +8,7 @@ const h2 = 'text-base font-bold text-white pt-2';
 export default function Privacidade() {
   return (
     <LegalPage title="Política de Privacidade" version="2026-10-30">
-      <p>Esta Política explica como a FM Tecnologia IA (FM Tecnologia LTDA, CNPJ 07.109.248/0001-57) (&quot;controladora&quot;) trata dados pessoais no NutriSnap IA, em conformidade com a Lei Geral de Proteção de Dados (Lei 13.709/2018, LGPD).</p>
+      <p>Esta Política explica como a FM Tecnologia IA LTDA (CNPJ 07.109.248/0001-57) (&quot;controladora&quot;) trata dados pessoais no NutriSnap IA, em conformidade com a Lei Geral de Proteção de Dados (Lei 13.709/2018, LGPD).</p>
 
       <h2 className={h2}>1. Dados que tratamos</h2>
       <ul className="list-disc pl-5 space-y-1">
@@ -53,7 +53,7 @@ export default function Privacidade() {
       <p>Não usamos cookies de publicidade. Guardamos no seu navegador apenas o token de sessão necessário para você continuar conectado.</p>
 
       <h2 className={h2}>9. Encarregado e contato</h2>
-      <p>Controladora: FM Tecnologia IA (FM Tecnologia LTDA, CNPJ 07.109.248/0001-57). Canal do Encarregado de dados e de titulares: contato@fmtecnologiaia.com.br. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
+      <p>Controladora: FM Tecnologia IA LTDA (CNPJ 07.109.248/0001-57). Canal do Encarregado de dados e de titulares: contato@fmtecnologiaia.com.br. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
 
       <h2 className={h2}>10. Alterações</h2>
       <p>Podemos atualizar esta Política; mudanças relevantes serão avisadas no aplicativo ou por e-mail, e a versão vigente fica sempre nesta página.</p>
