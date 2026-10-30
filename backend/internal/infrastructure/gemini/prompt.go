@@ -1,9 +1,4 @@
-﻿package gemini
-
-import (
-    "context"
-    "fmt"
-)
+package gemini
 
 // GetMealAnalysisPrompt retorna o prompt estruturado com foco em pratos e bebidas brasileiras
 func GetMealAnalysisPrompt() string {
