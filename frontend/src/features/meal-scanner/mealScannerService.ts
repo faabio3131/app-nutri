@@ -4,7 +4,7 @@ export interface MealItem {
   name: string; estimated_weight_g: number; calories: number; protein_g: number; carbs_g: number; fat_g: number;
 }
 export interface MealAnalysis {
-  meal_summary: { name: string; total_calories: number; total_protein_g: number; total_carbs_g: number; total_fat_g: number; confidence_level: string; notes: string };
+  meal_summary: { name: string; total_calories: number; total_protein_g: number; total_carbs_g: number; total_fat_g: number; confidence_level: string; notes: string; alternatives?: string[]; is_liquid?: boolean; serving_amount?: number; serving_unit?: string };
   items: MealItem[];
 }
 export interface AnalyzeResponse { meal_id: string; meal_type: string; data: MealAnalysis; usage: Usage }

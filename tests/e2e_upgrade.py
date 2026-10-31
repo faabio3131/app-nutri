@@ -134,5 +134,24 @@ raw2 = "tok" + uuid.uuid4().hex + uuid.uuid4().hex[:12]
 sql(f"insert into password_resets(token_hash,user_id,expires_at) values('{hashlib.sha256(raw2.encode()).hexdigest()}','{uid}', now()-interval '1 minute')")
 s, d, _ = call("POST", "/auth/reset", {"token": raw2, "password": "OutraSenha#789"}); check("token expirado 400", s == 400)
 
+# --- confirmar/refinar refeição (nome + quantidade)
+ra, _, ta, _ = signup()
+s, d, _ = analyze(ta); check("foto analisa", s == 200 and d.get("meal_id"), str(d))
+mid = d["meal_id"]; used0 = d["usage"]["used"]
+ms = d["data"]["meal_summary"]
+check("resumo traz alternativas/unidade saneadas", isinstance(ms.get("alternatives"), list) and ms.get("serving_unit") in ("ml", "g"), str(ms))
+s, d, _ = call("POST", f"/meals/{mid}/refine", {"name": "Iogurte natural", "amount": 200, "unit": "ml"}, ta)
+check("refine recalcula 200 ml", s == 200 and d["data"]["meal_summary"]["name"] == "Iogurte natural" and d["data"]["meal_summary"]["total_calories"] > 0, str(d))
+s, d, _ = call("GET", "/meals", token=ta)
+check("refeição atualizada no diário (nome novo)", s == 200 and any(m["name"] == "Iogurte natural" for m in d["meals"]), str(d)[:200])
+s, d, _ = call("GET", "/me", token=ta); check("refine não gasta foto", d["usage"]["used"] == used0, str(d["usage"]))
+s, d, _ = call("POST", f"/meals/{mid}/refine", {"name": "x", "amount": 200, "unit": "ml"}, ta); check("refine nome curto 400", s == 400)
+s, d, _ = call("POST", f"/meals/{mid}/refine", {"name": "Leite", "amount": 200, "unit": "oz"}, ta); check("refine unidade inválida 400", s == 400)
+s, d, _ = call("POST", f"/meals/{mid}/refine", {"name": "Leite", "amount": 0, "unit": "ml"}, ta); check("refine quantidade 0 400", s == 400)
+s, d, _ = call("POST", f"/meals/{mid}/refine", {"name": "Leite", "amount": 9999, "unit": "ml"}, ta); check("refine quantidade enorme 400", s == 400)
+_, _, tb, _ = signup()
+s, d, _ = call("POST", f"/meals/{mid}/refine", {"name": "Leite", "amount": 200, "unit": "ml"}, tb); check("refine de refeição alheia 404", s == 404)
+s, d, _ = call("POST", f"/meals/{mid}/refine", {"name": "Leite", "amount": 200, "unit": "ml"}); check("refine exige login", s == 401)
+
 ok, bad = results()
 print(f"\n{ok} ok, {bad} falhas"); sys.exit(1 if bad else 0)

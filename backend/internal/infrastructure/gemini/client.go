@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/faabio3131/app-nutri/backend/internal/domain"
@@ -60,7 +61,11 @@ const mealSchemaPrompt = `{
     "total_carbs_g": 0.0,
     "total_fat_g": 0.0,
     "confidence_level": "ALTO, MEDIO ou BAIXO",
-    "notes": "Observacoes sobre preparo, oleos ocultos ou dicas nutricionais"
+    "notes": "Observacoes sobre preparo, oleos ocultos ou dicas nutricionais",
+    "alternatives": ["ate 3 outros nomes plausiveis para o que aparece na foto"],
+    "is_liquid": false,
+    "serving_amount": 0.0,
+    "serving_unit": "ml para liquidos ou g para solidos"
   },
   "items": [
     {
@@ -79,8 +84,11 @@ func (c *Client) AnalyzeMealImage(imageBytes []byte, mimeType string, locale str
 		locale = "pt-BR"
 	}
 	prompt := fmt.Sprintf(`Voce e um nutricionista especialista em visao computacional e analise volumetrica de alimentos.
-Analise a foto do prato e retorne ESTRITAMENTE um objeto JSON valido seguindo esta estrutura exata:
+Analise a foto (pode ser prato, lanche, bebida, copo, pote ou produto embalado) e retorne ESTRITAMENTE um objeto JSON valido seguindo esta estrutura exata:
 %s
+Regras de identificacao: nao se guie so pela cor. Observe consistencia, opacidade, recipiente, colher, canudo, tampa e embalagem, e LEIA rotulos e textos visiveis (marca, sabor, volume). Cuidado com confusoes comuns, como iogurte x leite x vitamina, suco x refrigerante, cafe x achocolatado.
+Se houver duvida real entre dois ou mais alimentos, escolha o mais provavel, use confidence_level BAIXO e liste os outros em alternatives (maximo 3, nomes curtos, do mais ao menos provavel). Se estiver claro, alternatives pode ser vazio.
+Preencha serving_amount e serving_unit com a quantidade total que parece estar no recipiente ou prato (ml para liquidos, g para solidos) e is_liquid conforme o caso.
 Idioma obrigatorio para todos os textos de retorno: %s. Use a tabela TACO/TBCA como referencia nutricional.`, mealSchemaPrompt, locale)
 	parts := []map[string]interface{}{
 		{"text": prompt},
@@ -206,6 +214,20 @@ func sanitize(r *domain.GeminiResponseSchema) *domain.GeminiResponseSchema {
 	m.Name = cut(m.Name, 120)
 	m.Notes = cut(m.Notes, 400)
 	m.ConfidenceLevel = cut(m.ConfidenceLevel, 20)
+	alts := make([]string, 0, 3)
+	for _, a := range m.Alternatives {
+		if a = strings.TrimSpace(cut(a, 60)); a != "" && len(alts) < 3 {
+			alts = append(alts, a)
+		}
+	}
+	m.Alternatives = alts
+	m.ServingAmount = clamp(m.ServingAmount, 5000)
+	if m.ServingUnit != "ml" && m.ServingUnit != "g" {
+		m.ServingUnit = "g"
+		if m.IsLiquid {
+			m.ServingUnit = "ml"
+		}
+	}
 	m.TotalCalories = clamp(m.TotalCalories, 5000)
 	m.TotalProteinG = clamp(m.TotalProteinG, 500)
 	m.TotalCarbsG = clamp(m.TotalCarbsG, 800)

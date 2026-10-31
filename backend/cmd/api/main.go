@@ -100,6 +100,7 @@ func main() {
 		priv.GET("/meals", api.ListMeals)
 		priv.POST("/meals/text", textLimit.ByIP(), api.AnalyzeText)
 		priv.PATCH("/meals/:id", api.UpdateMeal)
+		priv.POST("/meals/:id/refine", textLimit.ByIP(), api.RefineMeal)
 		priv.DELETE("/meals/:id", api.DeleteMeal)
 		priv.POST("/nutrition/calculate", calcLimit.ByIP(), api.CalculateTDEE)
 		priv.POST("/workouts", calcLimit.ByIP(), api.RegisterWorkout)

@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -315,25 +316,30 @@ func (h *APIHandler) AnalyzeText(c *gin.Context) {
 
 // reserveText reserva 1 uso diário de texto de forma atômica (lock por usuário).
 func (h *APIHandler) reserveText(ctx context.Context, userID string, limit int) (string, bool, error) {
+	return h.reserveSource(ctx, userID, "text", limit)
+}
+
+// reserveSource reserva 1 uso diário de uma fonte de IA sem foto ("text" ou "refine"), de forma atômica.
+func (h *APIHandler) reserveSource(ctx context.Context, userID, source string, limit int) (string, bool, error) {
 	tx, err := h.pool.Begin(ctx)
 	if err != nil {
 		return "", false, err
 	}
 	defer tx.Rollback(ctx)
-	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "text:"+userID); err != nil {
+	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, source+":"+userID); err != nil {
 		return "", false, err
 	}
-	tx.Exec(ctx, `DELETE FROM photo_analyses WHERE user_id=$1 AND source='text' AND status='pending' AND created_at < now() - interval '3 minutes'`, userID)
+	tx.Exec(ctx, `DELETE FROM photo_analyses WHERE user_id=$1 AND source=$2 AND status='pending' AND created_at < now() - interval '3 minutes'`, userID, source)
 	var n int
-	if err := tx.QueryRow(ctx, `SELECT count(*) FROM photo_analyses WHERE user_id=$1 AND source='text' AND status IN ('ok','pending')
-		AND (created_at AT TIME ZONE 'America/Sao_Paulo')::date = (now() AT TIME ZONE 'America/Sao_Paulo')::date`, userID).Scan(&n); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM photo_analyses WHERE user_id=$1 AND source=$2 AND status IN ('ok','pending')
+		AND (created_at AT TIME ZONE 'America/Sao_Paulo')::date = (now() AT TIME ZONE 'America/Sao_Paulo')::date`, userID, source).Scan(&n); err != nil {
 		return "", false, err
 	}
 	if n >= limit {
 		return "", false, nil
 	}
 	var id string
-	if err := tx.QueryRow(ctx, `INSERT INTO photo_analyses(user_id, source) VALUES($1,'text') RETURNING id::text`, userID).Scan(&id); err != nil {
+	if err := tx.QueryRow(ctx, `INSERT INTO photo_analyses(user_id, source) VALUES($1,$2) RETURNING id::text`, userID, source).Scan(&id); err != nil {
 		return "", false, err
 	}
 	return id, true, tx.Commit(ctx)
@@ -396,4 +402,131 @@ func (h *APIHandler) UpdateMeal(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
+
+const (
+	refineLimitTrial = 10
+	refineLimitPaid  = 40
+)
+
+// RefineMeal recalcula uma refeição já registrada a partir do que o usuário confirmou (nome e quantidade em ml ou g).
+// Não gasta foto; tem limite diário próprio. O nome é tratado como dado, nunca como instrução.
+func (h *APIHandler) RefineMeal(c *gin.Context) {
+	u := middlewares.User(c)
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 2<<10)
+	var r struct {
+		Name   string  `json:"name"`
+		Amount float64 `json:"amount"`
+		Unit   string  `json:"unit"`
+	}
+	if err := c.ShouldBindJSON(&r); err != nil {
+		fail(c, http.StatusBadRequest, "Informe o que é e a quantidade.")
+		return
+	}
+	name := strings.TrimSpace(strings.NewReplacer("<", "", ">", "", "\n", " ", "\r", " ").Replace(r.Name))
+	if n := len([]rune(name)); n < 2 || n > 80 {
+		fail(c, http.StatusBadRequest, "Nome inválido (2 a 80 caracteres).")
+		return
+	}
+	if r.Unit != "ml" && r.Unit != "g" {
+		fail(c, http.StatusBadRequest, "Use ml ou g.")
+		return
+	}
+	if !(r.Amount >= 1 && r.Amount <= 5000) {
+		fail(c, http.StatusBadRequest, "Quantidade entre 1 e 5000.")
+		return
+	}
+	ctx := c.Request.Context()
+	var mealID string
+	if err := h.pool.QueryRow(ctx, `SELECT id::text FROM meals WHERE id::text=$1 AND user_id=$2`, c.Param("id"), u.ID).Scan(&mealID); err != nil {
+		fail(c, http.StatusNotFound, "Refeição não encontrada.")
+		return
+	}
+	usage, err := h.quota.Summary(ctx, u.ID, u.Email)
+	if err != nil {
+		fail(c, http.StatusInternalServerError, "Erro ao processar. Tente novamente.")
+		return
+	}
+	limit := refineLimitPaid
+	if usage.Plan == "teste" {
+		limit = refineLimitTrial
+	}
+	id, ok, err := h.reserveSource(ctx, u.ID, "refine", limit)
+	if err != nil {
+		fail(c, http.StatusInternalServerError, "Erro ao processar. Tente novamente.")
+		return
+	}
+	if !ok {
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": "Você atingiu o limite de correções de hoje. Use \"Editar\" para ajustar a porção.", "code": "refine_limit"})
+		return
+	}
+	release := func() {
+		h.pool.Exec(context.Background(), `DELETE FROM photo_analyses WHERE id=$1 AND status='pending'`, id)
+	}
+	desc := fmt.Sprintf("%g %s de %s", r.Amount, r.Unit, name)
+	actx, cancel := context.WithTimeout(ctx, 40*time.Second)
+	defer cancel()
+	type out struct {
+		r   *domain.GeminiResponseSchema
+		err error
+	}
+	ch := make(chan out, 1)
+	go func() {
+		res, e := h.mealService.ProcessMealText(desc, "pt-BR")
+		ch <- out{res, e}
+	}()
+	var res out
+	select {
+	case res = <-ch:
+	case <-actx.Done():
+		res.err = gemini.ErrUpstream
+	}
+	if res.err != nil || res.r == nil {
+		release()
+		fail(c, http.StatusBadGateway, "Não foi possível recalcular agora. Tente novamente.")
+		return
+	}
+	if len(res.r.Items) == 0 || res.r.MealSummary.TotalCalories <= 0 {
+		release()
+		fail(c, http.StatusUnprocessableEntity, "Não consegui calcular esse alimento. Confira o nome e tente de novo.")
+		return
+	}
+	m := res.r.MealSummary
+	tx, err := h.pool.Begin(ctx)
+	if err != nil {
+		release()
+		fail(c, http.StatusInternalServerError, "Erro ao salvar.")
+		return
+	}
+	defer tx.Rollback(ctx)
+	if _, err := tx.Exec(ctx, `UPDATE meals SET name=$1, total_calories=$2, total_protein_g=$3, total_carbs_g=$4, total_fat_g=$5, confidence_level='ALTO', notes=$6
+		WHERE id::text=$7 AND user_id=$8`, name, m.TotalCalories, m.TotalProteinG, m.TotalCarbsG, m.TotalFatG, m.Notes, mealID, u.ID); err != nil {
+		release()
+		fail(c, http.StatusInternalServerError, "Erro ao salvar.")
+		return
+	}
+	if _, err := tx.Exec(ctx, `DELETE FROM meal_items WHERE meal_id::text=$1`, mealID); err != nil {
+		release()
+		fail(c, http.StatusInternalServerError, "Erro ao salvar.")
+		return
+	}
+	for _, it := range res.r.Items {
+		if _, err := tx.Exec(ctx, `INSERT INTO meal_items(meal_id, food_name, estimated_weight_g, calories, protein_g, carbs_g, fat_g) VALUES($1,$2,$3,$4,$5,$6,$7)`,
+			mealID, it.Name, it.EstimatedWeightG, it.Calories, it.ProteinG, it.CarbsG, it.FatG); err != nil {
+			release()
+			fail(c, http.StatusInternalServerError, "Erro ao salvar.")
+			return
+		}
+	}
+	if err := tx.Commit(ctx); err != nil {
+		release()
+		fail(c, http.StatusInternalServerError, "Erro ao salvar.")
+		return
+	}
+	h.pool.Exec(ctx, `UPDATE photo_analyses SET status='ok' WHERE id=$1`, id)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"meal_id": mealID,
+		"data":    gin.H{"meal_summary": gin.H{"name": name, "total_calories": m.TotalCalories, "total_protein_g": m.TotalProteinG, "total_carbs_g": m.TotalCarbsG, "total_fat_g": m.TotalFatG}, "items": res.r.Items},
+	})
 }
