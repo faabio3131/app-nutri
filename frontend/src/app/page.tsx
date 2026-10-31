@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError, getToken, setToken, todayKey, todayWeekday, Usage } from '@/lib/api';
-import { analyzeMealPhoto, AnalyzeResponse } from '@/features/meal-scanner/mealScannerService';
+import { scanMealPhoto, AnalyzeResponse, ScanResponse, CalcResponse } from '@/features/meal-scanner/mealScannerService';
 import { PLANS, SUPPORT_EMAIL } from '@/lib/plans';
 import AuthScreen from '@/components/AuthScreen';
 import CloseDayModal, { Closure, Objective } from '@/components/CloseDayModal';
 import ExerciseModal from '@/components/ExerciseModal';
 import TextMealModal from '@/components/TextMealModal';
 import MealEditModal, { EditableMeal } from '@/components/MealEditModal';
-import ConfirmMealModal from '@/components/ConfirmMealModal';
+import MealBuilderModal from '@/components/MealBuilderModal';
 import HistoryTab from '@/components/HistoryTab';
 import OnboardingModal, { Profile } from '@/components/OnboardingModal';
 import { ACTIVITIES, activityLabel, estimateBurn } from '@/lib/activities';
@@ -89,7 +89,7 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
   const fileRef = useRef<HTMLInputElement>(null);
   const [scanning, setScanning] = useState(false);
   const [lastScan, setLastScan] = useState<AnalyzeResponse | null>(null);
-  const [confirmScan, setConfirmScan] = useState<AnalyzeResponse | null>(null);
+  const [confirmScan, setConfirmScan] = useState<ScanResponse | null>(null);
   const [scanError, setScanError] = useState('');
   const [accountMsg, setAccountMsg] = useState('');
   const [delPassword, setDelPassword] = useState('');
@@ -253,8 +253,8 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
     if (!f) return;
     setScanError(''); setLastScan(null); setScanning(true);
     try {
-      const r = await analyzeMealPhoto(f);
-      setLastScan(r); setUsage(r.usage); setConfirmScan(r); await refreshDay();
+      const r = await scanMealPhoto(f);
+      setUsage(r.usage); setConfirmScan(r);
     } catch (err: any) {
       if (handleAuthError(err)) return;
       if (err instanceof ApiError && err.status === 402) { if (err.data?.usage) setUsage(err.data.usage); setActiveTab('planos'); }
@@ -443,7 +443,7 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
                     {lastScan.data.items.map((it, i) => (<li key={i}>• {it.name} (~{Math.round(it.estimated_weight_g)} g) — {Math.round(it.calories)} kcal</li>))}
                   </ul>
                   {lastScan.data.meal_summary.notes && <p className="text-[11px] text-gray-400 italic">{lastScan.data.meal_summary.notes}</p>}
-                  <p className="text-[10px] text-gray-500">Confiança: {lastScan.data.meal_summary.confidence_level || '—'}. Estimativa aproximada feita por IA; a foto não é guardada.</p>
+                  <p className="text-[10px] text-gray-500">Confiança: {lastScan.data.meal_summary.confidence_level || '—'}. Estimativa calculada pela tabela TACO com o que você confirmou; a foto não é guardada.</p>
                 </div>
               )}
 
@@ -892,7 +892,7 @@ function AppShell({ user, usage, setUsage, onLogout }: { user: User; usage: Usag
             onClose={skipOnboarding} onSkip={skipOnboarding} onDone={finishOnboarding} />
         )}
         {showExercise && <ExerciseModal weightKg={Number(currentWeight) || 0} onClose={() => setShowExercise(false)} onSaved={() => { setShowExercise(false); refreshDay(); }} />}
-        {confirmScan && <ConfirmMealModal scan={confirmScan} onClose={() => setConfirmScan(null)} onRefined={(d) => { setLastScan((p) => (p ? { ...p, data: d } : p)); refreshDay(); }} />}
+        {confirmScan && <MealBuilderModal scan={confirmScan} onClose={() => setConfirmScan(null)} onSaved={(r: CalcResponse) => { if (r.data && r.meal_id) setLastScan({ meal_id: r.meal_id, meal_type: r.meal_type || '', data: r.data, usage: confirmScan.usage }); refreshDay(); }} />}
         {showText && <TextMealModal onClose={() => setShowText(false)} onSaved={() => { setShowText(false); refreshDay(); }} />}
         {editMeal && <MealEditModal meal={editMeal} onClose={() => setEditMeal(null)} onSaved={() => { setEditMeal(null); refreshDay(); }} />}
         {showClose && <CloseDayModal live={liveTotals} goals={goals} waterMl={waterNow} objective={objective} existing={closure} onClose={() => setShowClose(false)} onClosed={(c) => { setClosure(c); setHistKey((k) => k + 1); }} />}

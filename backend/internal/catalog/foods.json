@@ -1,0 +1,1585 @@
+[
+ {
+  "id": "arroz_branco",
+  "name": "Arroz branco",
+  "category": "base",
+  "aliases": [
+   "arroz"
+  ],
+  "per100g": {
+   "kcal": 128.0,
+   "protein_g": 2.5,
+   "carbs_g": 28.1,
+   "fat_g": 0.2
+  },
+  "csch_g": 25,
+  "fixed_g": 0,
+  "default_g": 78,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 3",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (arroz branco cozido; escumadeira media rasa 78 g)"
+ },
+ {
+  "id": "arroz_integral",
+  "name": "Arroz integral",
+  "category": "base",
+  "aliases": [
+   "arroz integral"
+  ],
+  "per100g": {
+   "kcal": 124.0,
+   "protein_g": 2.6,
+   "carbs_g": 25.8,
+   "fat_g": 1.0
+  },
+  "csch_g": 25,
+  "fixed_g": 0,
+  "default_g": 78,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 1",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (valor do arroz branco, densidade estimada)"
+ },
+ {
+  "id": "feijao_carioca",
+  "name": "Feijão carioca",
+  "category": "leguminosa",
+  "aliases": [
+   "feijao",
+   "feijao carioca"
+  ],
+  "per100g": {
+   "kcal": 76.0,
+   "protein_g": 4.8,
+   "carbs_g": 13.6,
+   "fat_g": 0.5
+  },
+  "csch_g": 25,
+  "fixed_g": 0,
+  "default_g": 160,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 561",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (feijao em caldo; concha media cheia 160 g)"
+ },
+ {
+  "id": "feijao_preto",
+  "name": "Feijão preto",
+  "category": "leguminosa",
+  "aliases": [
+   "feijao preto"
+  ],
+  "per100g": {
+   "kcal": 77.0,
+   "protein_g": 4.5,
+   "carbs_g": 14.0,
+   "fat_g": 0.5
+  },
+  "csch_g": 25,
+  "fixed_g": 0,
+  "default_g": 160,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 567",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (feijao em caldo; concha media cheia 160 g)"
+ },
+ {
+  "id": "lentilha",
+  "name": "Lentilha",
+  "category": "leguminosa",
+  "aliases": [
+   "lentilha"
+  ],
+  "per100g": {
+   "kcal": 93.0,
+   "protein_g": 6.3,
+   "carbs_g": 16.3,
+   "fat_g": 0.5
+  },
+  "csch_g": 20,
+  "fixed_g": 0,
+  "default_g": 60,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 577",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 20 g; 3 colheres)"
+ },
+ {
+  "id": "macarrao",
+  "name": "Macarrão cozido",
+  "category": "base",
+  "aliases": [
+   "macarrao",
+   "espaguete",
+   "massa",
+   "talharim",
+   "penne"
+  ],
+  "per100g": {
+   "kcal": 158,
+   "protein_g": 5.8,
+   "carbs_g": 30.86,
+   "fat_g": 0.93
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 155,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": true,
+  "source": "Tabela IBGE (POF), via tabelatacoonline.com.br",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (espaguete cozido; prato raso 155 g), densidade estimada"
+ },
+ {
+  "id": "macarrao_bolonhesa",
+  "name": "Macarrão à bolonhesa",
+  "category": "base",
+  "aliases": [
+   "macarrao a bolonhesa",
+   "macarrao com molho",
+   "espaguete a bolonhesa"
+  ],
+  "per100g": {
+   "kcal": 120.0,
+   "protein_g": 4.9,
+   "carbs_g": 22.5,
+   "fat_g": 0.9
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 230,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 542",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (espaguete cozido; prato fundo raso 230 g), densidade estimada"
+ },
+ {
+  "id": "nhoque",
+  "name": "Nhoque de batata",
+  "category": "base",
+  "aliases": [
+   "nhoque",
+   "nhoque de batata"
+  ],
+  "per100g": {
+   "kcal": 181.0,
+   "protein_g": 5.9,
+   "carbs_g": 36.8,
+   "fat_g": 1.9
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 200,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 136",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (nhoque a bolonhesa; porcao media 200 g), densidade estimada"
+ },
+ {
+  "id": "batata_cozida",
+  "name": "Batata cozida",
+  "category": "base",
+  "aliases": [
+   "batata",
+   "batata cozida"
+  ],
+  "per100g": {
+   "kcal": 52.0,
+   "protein_g": 1.2,
+   "carbs_g": 11.9,
+   "fat_g": 0.0
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 120,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 91",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (batata inglesa cozida; unidade media 120 g), densidade estimada"
+ },
+ {
+  "id": "batata_frita",
+  "name": "Batata frita",
+  "category": "base",
+  "aliases": [
+   "batata frita",
+   "fritas"
+  ],
+  "per100g": {
+   "kcal": 267.0,
+   "protein_g": 5.0,
+   "carbs_g": 35.6,
+   "fat_g": 13.1
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 90,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 93",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (batata frita palito; escumadeira media rasa 30 g; 3 escumadeiras), densidade estimada"
+ },
+ {
+  "id": "batata_doce",
+  "name": "Batata-doce cozida",
+  "category": "base",
+  "aliases": [
+   "batata doce"
+  ],
+  "per100g": {
+   "kcal": 77.0,
+   "protein_g": 0.6,
+   "carbs_g": 18.4,
+   "fat_g": 0.1
+  },
+  "csch_g": 20,
+  "fixed_g": 0,
+  "default_g": 60,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 88",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 20 g; 3 colheres)"
+ },
+ {
+  "id": "mandioca_cozida",
+  "name": "Mandioca cozida",
+  "category": "base",
+  "aliases": [
+   "mandioca",
+   "aipim",
+   "macaxeira"
+  ],
+  "per100g": {
+   "kcal": 125.0,
+   "protein_g": 0.6,
+   "carbs_g": 30.1,
+   "fat_g": 0.3
+  },
+  "csch_g": 37,
+  "fixed_g": 0,
+  "default_g": 111,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 129",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 37 g; 3 colheres)"
+ },
+ {
+  "id": "mandioca_frita",
+  "name": "Mandioca frita",
+  "category": "base",
+  "aliases": [
+   "mandioca frita",
+   "aipim frito"
+  ],
+  "per100g": {
+   "kcal": 300.0,
+   "protein_g": 1.4,
+   "carbs_g": 50.3,
+   "fat_g": 11.2
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 132",
+  "measure_source": ""
+ },
+ {
+  "id": "farofa",
+  "name": "Farofa",
+  "category": "base",
+  "aliases": [
+   "farofa"
+  ],
+  "per100g": {
+   "kcal": 406.0,
+   "protein_g": 2.1,
+   "carbs_g": 80.3,
+   "fat_g": 9.1
+  },
+  "csch_g": 15,
+  "fixed_g": 0,
+  "default_g": 30,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 131",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (farofa simples; porcao media 30 g)"
+ },
+ {
+  "id": "polenta",
+  "name": "Polenta / angu",
+  "category": "base",
+  "aliases": [
+   "polenta",
+   "angu"
+  ],
+  "per100g": {
+   "kcal": 103.0,
+   "protein_g": 2.3,
+   "carbs_g": 23.3,
+   "fat_g": 0.3
+  },
+  "csch_g": 35,
+  "fixed_g": 0,
+  "default_g": 110,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 62",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (angu de milho, similar; porcao media 110 g)"
+ },
+ {
+  "id": "cuscuz",
+  "name": "Cuscuz de milho",
+  "category": "base",
+  "aliases": [
+   "cuscuz"
+  ],
+  "per100g": {
+   "kcal": 113.0,
+   "protein_g": 2.2,
+   "carbs_g": 25.3,
+   "fat_g": 0.7
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 533",
+  "measure_source": ""
+ },
+ {
+  "id": "pao_frances",
+  "name": "Pão francês",
+  "category": "unidade",
+  "aliases": [
+   "pao",
+   "pao frances",
+   "paozinho"
+  ],
+  "per100g": {
+   "kcal": 300.0,
+   "protein_g": 8.0,
+   "carbs_g": 58.6,
+   "fat_g": 3.1
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 50,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 53",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (unidade media 50 g)"
+ },
+ {
+  "id": "pao_forma_integral",
+  "name": "Pão de forma integral (fatia)",
+  "category": "unidade",
+  "aliases": [
+   "pao de forma",
+   "pao integral",
+   "torrada"
+  ],
+  "per100g": {
+   "kcal": 253.0,
+   "protein_g": 9.4,
+   "carbs_g": 49.9,
+   "fat_g": 3.7
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 25,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 52",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (pao de forma, fatia media 25 g)"
+ },
+ {
+  "id": "tapioca",
+  "name": "Tapioca com manteiga",
+  "category": "base",
+  "aliases": [
+   "tapioca"
+  ],
+  "per100g": {
+   "kcal": 348.0,
+   "protein_g": 0.1,
+   "carbs_g": 63.6,
+   "fat_g": 10.9
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 551",
+  "measure_source": ""
+ },
+ {
+  "id": "bife_patinho",
+  "name": "Bife (patinho grelhado)",
+  "category": "proteina",
+  "aliases": [
+   "bife",
+   "carne",
+   "carne grelhada",
+   "patinho"
+  ],
+  "per100g": {
+   "kcal": 219.0,
+   "protein_g": 35.9,
+   "carbs_g": 0.0,
+   "fat_g": 7.3
+  },
+  "csch_g": 0,
+  "fixed_g": 110,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 377",
+  "measure_source": "Decisao do produto: porcao de proteina 100-120 g (110 g); Medidas Caseiras, Faculdade de Nutricao da UFG (bife medio 80 g, grande 120 g)"
+ },
+ {
+  "id": "picanha",
+  "name": "Picanha grelhada",
+  "category": "proteina",
+  "aliases": [
+   "picanha"
+  ],
+  "per100g": {
+   "kcal": 238.0,
+   "protein_g": 31.9,
+   "carbs_g": 0.0,
+   "fat_g": 11.3
+  },
+  "csch_g": 0,
+  "fixed_g": 110,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 383",
+  "measure_source": "Decisao do produto: porcao de proteina 100-120 g (110 g)"
+ },
+ {
+  "id": "contrafile",
+  "name": "Contrafilé grelhado",
+  "category": "proteina",
+  "aliases": [
+   "contrafile",
+   "contra file"
+  ],
+  "per100g": {
+   "kcal": 194.0,
+   "protein_g": 35.9,
+   "carbs_g": 0.0,
+   "fat_g": 4.5
+  },
+  "csch_g": 0,
+  "fixed_g": 110,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 346",
+  "measure_source": "Decisao do produto: porcao de proteina 100-120 g (110 g)"
+ },
+ {
+  "id": "alcatra",
+  "name": "Alcatra grelhada",
+  "category": "proteina",
+  "aliases": [
+   "alcatra"
+  ],
+  "per100g": {
+   "kcal": 241.0,
+   "protein_g": 31.9,
+   "carbs_g": 0.0,
+   "fat_g": 11.6
+  },
+  "csch_g": 0,
+  "fixed_g": 110,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 370",
+  "measure_source": "Decisao do produto: porcao de proteina 100-120 g (110 g)"
+ },
+ {
+  "id": "file_mignon",
+  "name": "Filé mignon grelhado",
+  "category": "proteina",
+  "aliases": [
+   "file mignon",
+   "file"
+  ],
+  "per100g": {
+   "kcal": 220.0,
+   "protein_g": 32.8,
+   "carbs_g": 0.0,
+   "fat_g": 8.8
+  },
+  "csch_g": 0,
+  "fixed_g": 110,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 358",
+  "measure_source": "Decisao do produto: porcao de proteina 100-120 g (110 g)"
+ },
+ {
+  "id": "carne_moida",
+  "name": "Carne moída refogada",
+  "category": "base",
+  "aliases": [
+   "carne moida",
+   "moida"
+  ],
+  "per100g": {
+   "kcal": 212.0,
+   "protein_g": 26.7,
+   "carbs_g": 0.0,
+   "fat_g": 10.9
+  },
+  "csch_g": 20,
+  "fixed_g": 0,
+  "default_g": 60,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 326",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (carne moida refogada; colher de sopa cheia 20 g; 3 colheres)"
+ },
+ {
+  "id": "frango_grelhado",
+  "name": "Frango grelhado (peito)",
+  "category": "proteina",
+  "aliases": [
+   "frango",
+   "frango grelhado",
+   "file de frango",
+   "peito de frango"
+  ],
+  "per100g": {
+   "kcal": 159.0,
+   "protein_g": 32.0,
+   "carbs_g": 0.0,
+   "fat_g": 2.5
+  },
+  "csch_g": 0,
+  "fixed_g": 110,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 410",
+  "measure_source": "Decisao do produto: porcao de proteina 100-120 g (110 g); Medidas Caseiras, Faculdade de Nutricao da UFG (file grelhado medio 85 g)"
+ },
+ {
+  "id": "coxa_frango",
+  "name": "Coxa de frango assada",
+  "category": "proteina",
+  "aliases": [
+   "coxa",
+   "coxa de frango",
+   "sobrecoxa"
+  ],
+  "per100g": {
+   "kcal": 215.0,
+   "protein_g": 28.5,
+   "carbs_g": 0.1,
+   "fat_g": 10.4
+  },
+  "csch_g": 0,
+  "fixed_g": 50,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 396",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (coxa assada sem osso 50 g)"
+ },
+ {
+  "id": "peixe_frito",
+  "name": "Peixe frito (filé)",
+  "category": "proteina",
+  "aliases": [
+   "peixe",
+   "peixe frito",
+   "pescada"
+  ],
+  "per100g": {
+   "kcal": 283.0,
+   "protein_g": 21.4,
+   "carbs_g": 5.0,
+   "fat_g": 19.1
+  },
+  "csch_g": 0,
+  "fixed_g": 130,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 306",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (file de peixe frito, unidade media 130 g)"
+ },
+ {
+  "id": "salmao",
+  "name": "Salmão grelhado",
+  "category": "proteina",
+  "aliases": [
+   "salmao"
+  ],
+  "per100g": {
+   "kcal": 243.0,
+   "protein_g": 26.1,
+   "carbs_g": 0.0,
+   "fat_g": 14.5
+  },
+  "csch_g": 0,
+  "fixed_g": 130,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 317",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (file de peixe, unidade media 130 g)"
+ },
+ {
+  "id": "bisteca_suina",
+  "name": "Bisteca suína grelhada",
+  "category": "proteina",
+  "aliases": [
+   "bisteca",
+   "porco",
+   "carne de porco"
+  ],
+  "per100g": {
+   "kcal": 280.0,
+   "protein_g": 28.9,
+   "carbs_g": 0.0,
+   "fat_g": 17.4
+  },
+  "csch_g": 0,
+  "fixed_g": 110,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 429",
+  "measure_source": "Decisao do produto: porcao de proteina 100-120 g (110 g)"
+ },
+ {
+  "id": "lombo_suino",
+  "name": "Lombo suíno assado",
+  "category": "proteina",
+  "aliases": [
+   "lombo"
+  ],
+  "per100g": {
+   "kcal": 210.0,
+   "protein_g": 35.7,
+   "carbs_g": 0.0,
+   "fat_g": 6.4
+  },
+  "csch_g": 0,
+  "fixed_g": 110,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 432",
+  "measure_source": "Decisao do produto: porcao de proteina 100-120 g (110 g)"
+ },
+ {
+  "id": "linguica",
+  "name": "Linguiça (frango, grelhada)",
+  "category": "proteina",
+  "aliases": [
+   "linguica"
+  ],
+  "per100g": {
+   "kcal": 244.0,
+   "protein_g": 18.2,
+   "carbs_g": 0.0,
+   "fat_g": 18.4
+  },
+  "csch_g": 0,
+  "fixed_g": 80,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 420",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (linguica frita, porcao media 80 g)"
+ },
+ {
+  "id": "hamburguer",
+  "name": "Hambúrguer grelhado",
+  "category": "proteina",
+  "aliases": [
+   "hamburguer"
+  ],
+  "per100g": {
+   "kcal": 210.0,
+   "protein_g": 13.2,
+   "carbs_g": 11.3,
+   "fat_g": 12.4
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 42,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 417",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (hamburguer, unidade 42 g)"
+ },
+ {
+  "id": "ovo_cozido",
+  "name": "Ovo cozido",
+  "category": "unidade",
+  "aliases": [
+   "ovo cozido"
+  ],
+  "per100g": {
+   "kcal": 146.0,
+   "protein_g": 13.3,
+   "carbs_g": 0.6,
+   "fat_g": 9.5
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 50,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 488",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (ovo cozido, unidade media 50 g)"
+ },
+ {
+  "id": "ovo_frito",
+  "name": "Ovo frito",
+  "category": "unidade",
+  "aliases": [
+   "ovo",
+   "ovos",
+   "ovo frito"
+  ],
+  "per100g": {
+   "kcal": 240.0,
+   "protein_g": 15.6,
+   "carbs_g": 1.2,
+   "fat_g": 18.6
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 38,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 490",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (ovo frito gema solida, unidade media 38 g)"
+ },
+ {
+  "id": "omelete",
+  "name": "Omelete (1 ovo)",
+  "category": "unidade",
+  "aliases": [
+   "omelete"
+  ],
+  "per100g": {
+   "kcal": 268.0,
+   "protein_g": 15.6,
+   "carbs_g": 0.4,
+   "fat_g": 22.0
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 40,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 484",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (omelete 1 ovo, 40 g)"
+ },
+ {
+  "id": "presunto",
+  "name": "Presunto (fatia)",
+  "category": "unidade",
+  "aliases": [
+   "presunto"
+  ],
+  "per100g": {
+   "kcal": 94.0,
+   "protein_g": 14.3,
+   "carbs_g": 2.1,
+   "fat_g": 2.7
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 30,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 439",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (fatia media 30 g)"
+ },
+ {
+  "id": "queijo_mussarela",
+  "name": "Queijo muçarela (fatia)",
+  "category": "unidade",
+  "aliases": [
+   "queijo",
+   "mussarela",
+   "mucarela",
+   "muçarela"
+  ],
+  "per100g": {
+   "kcal": 330.0,
+   "protein_g": 22.6,
+   "carbs_g": 3.0,
+   "fat_g": 25.2
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 30,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 463",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (fatia media 30 g)"
+ },
+ {
+  "id": "feijoada",
+  "name": "Feijoada",
+  "category": "leguminosa",
+  "aliases": [
+   "feijoada"
+  ],
+  "per100g": {
+   "kcal": 117.0,
+   "protein_g": 8.7,
+   "carbs_g": 11.6,
+   "fat_g": 6.5
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 540",
+  "measure_source": ""
+ },
+ {
+  "id": "alface",
+  "name": "Alface crespa",
+  "category": "salada",
+  "aliases": [
+   "alface",
+   "salada verde"
+  ],
+  "per100g": {
+   "kcal": 11.0,
+   "protein_g": 1.3,
+   "carbs_g": 1.7,
+   "fat_g": 0.2
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 36,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 78",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (alface americana picada, pires de cha raso 36 g), densidade estimada"
+ },
+ {
+  "id": "tomate",
+  "name": "Tomate",
+  "category": "salada",
+  "aliases": [
+   "tomate"
+  ],
+  "per100g": {
+   "kcal": 21.0,
+   "protein_g": 0.8,
+   "carbs_g": 5.1,
+   "fat_g": 0.0
+  },
+  "csch_g": 24,
+  "fixed_g": 0,
+  "default_g": 72,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 161",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (tomate picado, colher de sopa cheia 24 g; 3 colheres)"
+ },
+ {
+  "id": "cenoura_cozida",
+  "name": "Cenoura cozida",
+  "category": "salada",
+  "aliases": [
+   "cenoura"
+  ],
+  "per100g": {
+   "kcal": 30.0,
+   "protein_g": 0.8,
+   "carbs_g": 6.7,
+   "fat_g": 0.2
+  },
+  "csch_g": 22,
+  "fixed_g": 0,
+  "default_g": 66,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 109",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 22 g; 3 colheres)"
+ },
+ {
+  "id": "brocolis",
+  "name": "Brócolis cozido",
+  "category": "salada",
+  "aliases": [
+   "brocolis"
+  ],
+  "per100g": {
+   "kcal": 25.0,
+   "protein_g": 2.1,
+   "carbs_g": 4.4,
+   "fat_g": 0.5
+  },
+  "csch_g": 13,
+  "fixed_g": 0,
+  "default_g": 39,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 100",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 13 g; 3 colheres)"
+ },
+ {
+  "id": "couve_refogada",
+  "name": "Couve refogada",
+  "category": "salada",
+  "aliases": [
+   "couve"
+  ],
+  "per100g": {
+   "kcal": 90.0,
+   "protein_g": 1.7,
+   "carbs_g": 8.7,
+   "fat_g": 6.6
+  },
+  "csch_g": 15,
+  "fixed_g": 0,
+  "default_g": 45,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 116",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 15 g; 3 colheres)"
+ },
+ {
+  "id": "abobrinha",
+  "name": "Abobrinha refogada",
+  "category": "salada",
+  "aliases": [
+   "abobrinha"
+  ],
+  "per100g": {
+   "kcal": 24.0,
+   "protein_g": 1.1,
+   "carbs_g": 4.2,
+   "fat_g": 0.8
+  },
+  "csch_g": 20,
+  "fixed_g": 0,
+  "default_g": 60,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 72",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (abobrinha cozida, colher de sopa cheia 20 g; 3 colheres)"
+ },
+ {
+  "id": "chuchu",
+  "name": "Chuchu cozido",
+  "category": "salada",
+  "aliases": [
+   "chuchu"
+  ],
+  "per100g": {
+   "kcal": 19.0,
+   "protein_g": 0.4,
+   "carbs_g": 4.8,
+   "fat_g": 0.0
+  },
+  "csch_g": 20,
+  "fixed_g": 0,
+  "default_g": 60,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 112",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 20 g; 3 colheres)"
+ },
+ {
+  "id": "couve_flor",
+  "name": "Couve-flor cozida",
+  "category": "salada",
+  "aliases": [
+   "couve flor"
+  ],
+  "per100g": {
+   "kcal": 19.0,
+   "protein_g": 1.2,
+   "carbs_g": 3.9,
+   "fat_g": 0.3
+  },
+  "csch_g": 16,
+  "fixed_g": 0,
+  "default_g": 48,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 118",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 16 g; 3 colheres)"
+ },
+ {
+  "id": "beterraba",
+  "name": "Beterraba cozida",
+  "category": "salada",
+  "aliases": [
+   "beterraba"
+  ],
+  "per100g": {
+   "kcal": 32.0,
+   "protein_g": 1.3,
+   "carbs_g": 7.2,
+   "fat_g": 0.1
+  },
+  "csch_g": 20,
+  "fixed_g": 0,
+  "default_g": 60,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 97",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 20 g; 3 colheres)"
+ },
+ {
+  "id": "molho_tomate",
+  "name": "Molho de tomate",
+  "category": "molho",
+  "aliases": [
+   "molho de tomate",
+   "molho",
+   "sugo"
+  ],
+  "per100g": {
+   "kcal": 38.0,
+   "protein_g": 1.4,
+   "carbs_g": 7.7,
+   "fat_g": 0.9
+  },
+  "csch_g": 30,
+  "fixed_g": 0,
+  "default_g": 60,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 159",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 30 g; 2 colheres)"
+ },
+ {
+  "id": "banana_prata",
+  "name": "Banana prata",
+  "category": "fruta",
+  "aliases": [
+   "banana"
+  ],
+  "per100g": {
+   "kcal": 98.0,
+   "protein_g": 1.3,
+   "carbs_g": 26.0,
+   "fat_g": 0.1
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 75,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 182",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (banana prata sem casca, unidade media 75 g)"
+ },
+ {
+  "id": "banana_nanica",
+  "name": "Banana nanica",
+  "category": "fruta",
+  "aliases": [
+   "banana nanica"
+  ],
+  "per100g": {
+   "kcal": 92.0,
+   "protein_g": 1.4,
+   "carbs_g": 23.8,
+   "fat_g": 0.1
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 100,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 179",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (banana nanica sem casca, unidade media 100 g)"
+ },
+ {
+  "id": "maca",
+  "name": "Maçã Fuji",
+  "category": "fruta",
+  "aliases": [
+   "maca"
+  ],
+  "per100g": {
+   "kcal": 56.0,
+   "protein_g": 0.3,
+   "carbs_g": 15.2,
+   "fat_g": 0.0
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 125,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 222",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (maca fuji, unidade media 125 g)"
+ },
+ {
+  "id": "laranja",
+  "name": "Laranja pêra",
+  "category": "fruta",
+  "aliases": [
+   "laranja"
+  ],
+  "per100g": {
+   "kcal": 37.0,
+   "protein_g": 1.0,
+   "carbs_g": 8.9,
+   "fat_g": 0.1
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 150,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 214",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (laranja pera sem casca, unidade media 150 g)"
+ },
+ {
+  "id": "mamao",
+  "name": "Mamão papaia",
+  "category": "fruta",
+  "aliases": [
+   "mamao"
+  ],
+  "per100g": {
+   "kcal": 40.0,
+   "protein_g": 0.5,
+   "carbs_g": 10.4,
+   "fat_g": 0.1
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 90,
+  "needs_grams": false,
+  "density_estimated": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 226",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (mamao papaia, fatia media 90 g)"
+ },
+ {
+  "id": "azeite",
+  "name": "Azeite de oliva",
+  "category": "gordura",
+  "aliases": [
+   "azeite"
+  ],
+  "per100g": {
+   "kcal": 884.0,
+   "protein_g": 0.0,
+   "carbs_g": 0.0,
+   "fat_g": 100.0
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 10,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 260",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa nivelada 10 g)"
+ },
+ {
+  "id": "manteiga",
+  "name": "Manteiga",
+  "category": "gordura",
+  "aliases": [
+   "manteiga",
+   "margarina"
+  ],
+  "per100g": {
+   "kcal": 726.0,
+   "protein_g": 0.4,
+   "carbs_g": 0.1,
+   "fat_g": 82.4
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 20,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 261",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (manteiga/margarina, colher de sopa cheia 20 g)"
+ },
+ {
+  "id": "requeijao",
+  "name": "Requeijão cremoso",
+  "category": "gordura",
+  "aliases": [
+   "requeijao"
+  ],
+  "per100g": {
+   "kcal": 257.0,
+   "protein_g": 9.6,
+   "carbs_g": 2.4,
+   "fat_g": 23.4
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 21,
+  "unit_g": 0,
+  "needs_grams": false,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 468",
+  "measure_source": "Medidas Caseiras, Faculdade de Nutricao da UFG (colher de sopa cheia 21 g)"
+ },
+ {
+  "id": "maionese",
+  "name": "Maionese",
+  "category": "gordura",
+  "aliases": [
+   "maionese"
+  ],
+  "per100g": {
+   "kcal": 302.0,
+   "protein_g": 0.6,
+   "carbs_g": 7.9,
+   "fat_g": 30.5
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 524",
+  "measure_source": ""
+ },
+ {
+  "id": "coxinha",
+  "name": "Coxinha de frango frita",
+  "category": "outro",
+  "aliases": [
+   "coxinha"
+  ],
+  "per100g": {
+   "kcal": 283.0,
+   "protein_g": 9.6,
+   "carbs_g": 34.5,
+   "fat_g": 11.8
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 386",
+  "measure_source": ""
+ },
+ {
+  "id": "pastel_carne",
+  "name": "Pastel de carne frito",
+  "category": "outro",
+  "aliases": [
+   "pastel"
+  ],
+  "per100g": {
+   "kcal": 388.0,
+   "protein_g": 10.1,
+   "carbs_g": 43.8,
+   "fat_g": 20.1
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 56",
+  "measure_source": ""
+ },
+ {
+  "id": "pastel_queijo",
+  "name": "Pastel de queijo frito",
+  "category": "outro",
+  "aliases": [
+   "pastel de queijo"
+  ],
+  "per100g": {
+   "kcal": 422.0,
+   "protein_g": 8.7,
+   "carbs_g": 48.1,
+   "fat_g": 22.7
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 58",
+  "measure_source": ""
+ },
+ {
+  "id": "pao_de_queijo",
+  "name": "Pão de queijo assado",
+  "category": "outro",
+  "aliases": [
+   "pao de queijo"
+  ],
+  "per100g": {
+   "kcal": 363.0,
+   "protein_g": 5.1,
+   "carbs_g": 34.2,
+   "fat_g": 24.6
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 140",
+  "measure_source": ""
+ },
+ {
+  "id": "empada",
+  "name": "Empada de frango",
+  "category": "outro",
+  "aliases": [
+   "empada"
+  ],
+  "per100g": {
+   "kcal": 358.0,
+   "protein_g": 6.9,
+   "carbs_g": 47.5,
+   "fat_g": 15.6
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 389",
+  "measure_source": ""
+ },
+ {
+  "id": "bolo_chocolate",
+  "name": "Bolo de chocolate",
+  "category": "outro",
+  "aliases": [
+   "bolo"
+  ],
+  "per100g": {
+   "kcal": 410.0,
+   "protein_g": 6.2,
+   "carbs_g": 54.7,
+   "fat_g": 18.5
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 16",
+  "measure_source": ""
+ },
+ {
+  "id": "biscoito_cream_cracker",
+  "name": "Biscoito cream cracker",
+  "category": "outro",
+  "aliases": [
+   "biscoito",
+   "bolacha"
+  ],
+  "per100g": {
+   "kcal": 432.0,
+   "protein_g": 10.1,
+   "carbs_g": 68.7,
+   "fat_g": 14.4
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 13",
+  "measure_source": ""
+ },
+ {
+  "id": "aveia",
+  "name": "Aveia em flocos",
+  "category": "outro",
+  "aliases": [
+   "aveia"
+  ],
+  "per100g": {
+   "kcal": 394.0,
+   "protein_g": 13.9,
+   "carbs_g": 66.6,
+   "fat_g": 8.5
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 7",
+  "measure_source": ""
+ },
+ {
+  "id": "amendoim",
+  "name": "Amendoim torrado",
+  "category": "outro",
+  "aliases": [
+   "amendoim"
+  ],
+  "per100g": {
+   "kcal": 606.0,
+   "protein_g": 22.5,
+   "carbs_g": 18.7,
+   "fat_g": 54.0
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 558",
+  "measure_source": ""
+ },
+ {
+  "id": "chocolate_leite",
+  "name": "Chocolate ao leite",
+  "category": "outro",
+  "aliases": [
+   "chocolate"
+  ],
+  "per100g": {
+   "kcal": 540.0,
+   "protein_g": 7.2,
+   "carbs_g": 59.6,
+   "fat_g": 30.3
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 495",
+  "measure_source": ""
+ },
+ {
+  "id": "iogurte_natural_g",
+  "name": "Iogurte natural (em g)",
+  "category": "outro",
+  "aliases": [
+   "iogurte"
+  ],
+  "per100g": {
+   "kcal": 51.0,
+   "protein_g": 4.1,
+   "carbs_g": 1.9,
+   "fat_g": 3.0
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 448",
+  "measure_source": ""
+ },
+ {
+  "id": "acai_polpa",
+  "name": "Açaí (polpa)",
+  "category": "outro",
+  "aliases": [
+   "acai"
+  ],
+  "per100g": {
+   "kcal": 58.0,
+   "protein_g": 0.8,
+   "carbs_g": 6.2,
+   "fat_g": 3.9
+  },
+  "csch_g": 0,
+  "fixed_g": 0,
+  "default_g": 0,
+  "unit_g": 0,
+  "needs_grams": true,
+  "density_estimated": true,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 168",
+  "measure_source": ""
+ }
+]

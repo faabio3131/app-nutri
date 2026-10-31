@@ -74,6 +74,7 @@ func main() {
 	calcLimit := middlewares.NewLimiter(120, time.Minute)
 	forgotLimit := middlewares.NewLimiter(10, 15*time.Minute)
 	textLimit := middlewares.NewLimiter(30, time.Minute)
+	mealCalcLimit := middlewares.NewLimiter(120, time.Minute) // prévia ao vivo na tela do prato
 
 	v1 := router.Group("/api/v1")
 	{
@@ -100,7 +101,9 @@ func main() {
 		priv.GET("/meals", api.ListMeals)
 		priv.POST("/meals/text", textLimit.ByIP(), api.AnalyzeText)
 		priv.PATCH("/meals/:id", api.UpdateMeal)
-		priv.POST("/meals/:id/refine", textLimit.ByIP(), api.RefineMeal)
+		priv.POST("/meals/scan", api.ScanMeal)
+		priv.POST("/meals/calc", mealCalcLimit.ByIP(), api.CalcMeal)
+		priv.GET("/catalog", api.Catalog)
 		priv.DELETE("/meals/:id", api.DeleteMeal)
 		priv.POST("/nutrition/calculate", calcLimit.ByIP(), api.CalculateTDEE)
 		priv.POST("/workouts", calcLimit.ByIP(), api.RegisterWorkout)
