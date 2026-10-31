@@ -88,6 +88,19 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Vídeo de apresentação */}
+      <section id="video" className="mx-auto max-w-4xl px-5 py-16 text-center">
+        <h2 className="text-2xl font-black text-white md:text-4xl">Veja o NutriSnap IA em 19 segundos</h2>
+        <p className="mx-auto mt-3 max-w-xl text-sm text-emerald-100/70">Foto do prato, confirmação do que a IA viu e calorias e macros estimados. Depois, exercício, fechamento do dia e histórico.</p>
+        <div className="mx-auto mt-8 overflow-hidden rounded-2xl border border-emerald-400/30 bg-black shadow-2xl shadow-emerald-500/10">
+          <video controls playsInline preload="metadata" poster="/img/video-poster.jpg" className="aspect-video w-full" aria-label="Vídeo de apresentação do NutriSnap IA">
+            <source src="/video/nutrisnap.mp4" type="video/mp4" />
+            Seu navegador não reproduz vídeo. Acesse nutrisnapia.com.br para ver a apresentação.
+          </video>
+        </div>
+        <p className="mt-3 text-[11px] text-emerald-100/50">Vídeo ilustrativo; as telas são representações. Valores de calorias são estimativas.</p>
+      </section>
+
       {/* Benefícios de comer bem */}
       <section id="beneficios" className="border-y border-white/10 bg-[#0a1812] py-20">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 md:grid-cols-[1fr_1.2fr]">
