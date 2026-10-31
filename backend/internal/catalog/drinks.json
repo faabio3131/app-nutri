@@ -1,0 +1,565 @@
+[
+ {
+  "id": "leite_integral",
+  "group": "leite",
+  "group_label": "Leite",
+  "variant": "Integral",
+  "aliases": [
+   "leite",
+   "leite integral"
+  ],
+  "per100ml": {
+   "kcal": 60,
+   "protein_g": 3.22,
+   "carbs_g": 4.52,
+   "fat_g": 3.25
+  },
+  "sugar_free": false,
+  "source": "Tabela IBGE (POF), via tabelatacoonline.com.br"
+ },
+ {
+  "id": "leite_semi",
+  "group": "leite",
+  "group_label": "Leite",
+  "variant": "Semidesnatado",
+  "aliases": [
+   "leite semidesnatado"
+  ],
+  "per100ml": {
+   "kcal": 42,
+   "protein_g": 3.37,
+   "carbs_g": 4.99,
+   "fat_g": 0.97
+  },
+  "sugar_free": false,
+  "source": "Tabela IBGE (POF), via tabelatacoonline.com.br"
+ },
+ {
+  "id": "leite_desnatado",
+  "group": "leite",
+  "group_label": "Leite",
+  "variant": "Desnatado",
+  "aliases": [
+   "leite desnatado"
+  ],
+  "per100ml": {
+   "kcal": 34.15,
+   "protein_g": 3.38,
+   "carbs_g": 4.98,
+   "fat_g": 0.08
+  },
+  "sugar_free": false,
+  "source": "Tabela IBGE (POF), via tabelatacoonline.com.br"
+ },
+ {
+  "id": "leite_achocolatado",
+  "group": "leite",
+  "group_label": "Leite",
+  "variant": "Achocolatado",
+  "aliases": [
+   "achocolatado",
+   "toddynho"
+  ],
+  "per100ml": {
+   "kcal": 83.0,
+   "protein_g": 2.1,
+   "carbs_g": 14.2,
+   "fat_g": 2.2
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 455"
+ },
+ {
+  "id": "leite_fermentado",
+  "group": "leite",
+  "group_label": "Leite",
+  "variant": "Fermentado (tipo Yakult)",
+  "aliases": [
+   "yakult",
+   "leite fermentado"
+  ],
+  "per100ml": {
+   "kcal": 70.0,
+   "protein_g": 1.9,
+   "carbs_g": 15.7,
+   "fat_g": 0.1
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 460"
+ },
+ {
+  "id": "iogurte_natural",
+  "group": "iogurte",
+  "group_label": "Iogurte",
+  "variant": "Natural integral",
+  "aliases": [
+   "iogurte",
+   "iogurte natural"
+  ],
+  "per100ml": {
+   "kcal": 51.0,
+   "protein_g": 4.1,
+   "carbs_g": 1.9,
+   "fat_g": 3.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 448"
+ },
+ {
+  "id": "iogurte_desnatado",
+  "group": "iogurte",
+  "group_label": "Iogurte",
+  "variant": "Natural desnatado",
+  "aliases": [
+   "iogurte desnatado"
+  ],
+  "per100ml": {
+   "kcal": 41.0,
+   "protein_g": 3.8,
+   "carbs_g": 5.8,
+   "fat_g": 0.3
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 449"
+ },
+ {
+  "id": "iogurte_morango",
+  "group": "iogurte",
+  "group_label": "Iogurte",
+  "variant": "Sabor morango",
+  "aliases": [
+   "iogurte de morango"
+  ],
+  "per100ml": {
+   "kcal": 70.0,
+   "protein_g": 2.7,
+   "carbs_g": 9.7,
+   "fat_g": 2.3
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 451"
+ },
+ {
+  "id": "iogurte_pessego",
+  "group": "iogurte",
+  "group_label": "Iogurte",
+  "variant": "Sabor pêssego",
+  "aliases": [
+   "iogurte de pessego"
+  ],
+  "per100ml": {
+   "kcal": 68.0,
+   "protein_g": 2.5,
+   "carbs_g": 9.4,
+   "fat_g": 2.3
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 452"
+ },
+ {
+  "id": "bebida_lactea",
+  "group": "iogurte",
+  "group_label": "Iogurte",
+  "variant": "Bebida láctea (pêssego)",
+  "aliases": [
+   "bebida lactea"
+  ],
+  "per100ml": {
+   "kcal": 55.0,
+   "protein_g": 2.1,
+   "carbs_g": 7.6,
+   "fat_g": 1.9
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 446"
+ },
+ {
+  "id": "cola",
+  "group": "refrigerante",
+  "group_label": "Refrigerante",
+  "variant": "Cola (com açúcar)",
+  "aliases": [
+   "coca",
+   "coca cola",
+   "refrigerante de cola",
+   "pepsi"
+  ],
+  "per100ml": {
+   "kcal": 34.0,
+   "protein_g": 0.0,
+   "carbs_g": 8.7,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 480"
+ },
+ {
+  "id": "cola_zero",
+  "group": "refrigerante",
+  "group_label": "Refrigerante",
+  "variant": "Cola zero",
+  "aliases": [
+   "coca zero",
+   "cola zero"
+  ],
+  "per100ml": {
+   "kcal": 0.0,
+   "protein_g": 0.0,
+   "carbs_g": 0.0,
+   "fat_g": 0.0
+  },
+  "sugar_free": true,
+  "source": "ANVISA RDC 54/2012: alegacao 'zero' exige no maximo 4 kcal por porcao; tratado como 0 (confira o rotulo)"
+ },
+ {
+  "id": "guarana",
+  "group": "refrigerante",
+  "group_label": "Refrigerante",
+  "variant": "Guaraná (com açúcar)",
+  "aliases": [
+   "guarana",
+   "guarana antarctica"
+  ],
+  "per100ml": {
+   "kcal": 39.0,
+   "protein_g": 0.0,
+   "carbs_g": 10.0,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 481"
+ },
+ {
+  "id": "guarana_zero",
+  "group": "refrigerante",
+  "group_label": "Refrigerante",
+  "variant": "Guaraná zero",
+  "aliases": [
+   "guarana zero"
+  ],
+  "per100ml": {
+   "kcal": 0.0,
+   "protein_g": 0.0,
+   "carbs_g": 0.0,
+   "fat_g": 0.0
+  },
+  "sugar_free": true,
+  "source": "ANVISA RDC 54/2012: alegacao 'zero' exige no maximo 4 kcal por porcao; tratado como 0 (confira o rotulo)"
+ },
+ {
+  "id": "laranja_refri",
+  "group": "refrigerante",
+  "group_label": "Refrigerante",
+  "variant": "Laranja, tipo Fanta (com açúcar)",
+  "aliases": [
+   "fanta",
+   "fanta laranja",
+   "refrigerante de laranja"
+  ],
+  "per100ml": {
+   "kcal": 46.0,
+   "protein_g": 0.0,
+   "carbs_g": 11.8,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 482"
+ },
+ {
+  "id": "laranja_refri_zero",
+  "group": "refrigerante",
+  "group_label": "Refrigerante",
+  "variant": "Laranja zero",
+  "aliases": [
+   "fanta zero"
+  ],
+  "per100ml": {
+   "kcal": 0.0,
+   "protein_g": 0.0,
+   "carbs_g": 0.0,
+   "fat_g": 0.0
+  },
+  "sugar_free": true,
+  "source": "ANVISA RDC 54/2012: alegacao 'zero' exige no maximo 4 kcal por porcao; tratado como 0 (confira o rotulo)"
+ },
+ {
+  "id": "limao_refri",
+  "group": "refrigerante",
+  "group_label": "Refrigerante",
+  "variant": "Limão, tipo Sprite (com açúcar)",
+  "aliases": [
+   "sprite",
+   "refrigerante de limao"
+  ],
+  "per100ml": {
+   "kcal": 40.0,
+   "protein_g": 0.0,
+   "carbs_g": 10.3,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 483"
+ },
+ {
+  "id": "limao_refri_zero",
+  "group": "refrigerante",
+  "group_label": "Refrigerante",
+  "variant": "Limão zero",
+  "aliases": [
+   "sprite zero"
+  ],
+  "per100ml": {
+   "kcal": 0.0,
+   "protein_g": 0.0,
+   "carbs_g": 0.0,
+   "fat_g": 0.0
+  },
+  "sugar_free": true,
+  "source": "ANVISA RDC 54/2012: alegacao 'zero' exige no maximo 4 kcal por porcao; tratado como 0 (confira o rotulo)"
+ },
+ {
+  "id": "tonica",
+  "group": "refrigerante",
+  "group_label": "Refrigerante",
+  "variant": "Água tônica",
+  "aliases": [
+   "agua tonica",
+   "tonica"
+  ],
+  "per100ml": {
+   "kcal": 31.0,
+   "protein_g": 0.0,
+   "carbs_g": 8.0,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 479"
+ },
+ {
+  "id": "suco_laranja",
+  "group": "suco",
+  "group_label": "Suco",
+  "variant": "Laranja natural (sem açúcar)",
+  "aliases": [
+   "suco de laranja",
+   "laranja"
+  ],
+  "per100ml": {
+   "kcal": 37.0,
+   "protein_g": 0.7,
+   "carbs_g": 8.7,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 209"
+ },
+ {
+  "id": "suco_limao",
+  "group": "suco",
+  "group_label": "Suco",
+  "variant": "Limão (sem açúcar)",
+  "aliases": [
+   "suco de limao",
+   "limonada"
+  ],
+  "per100ml": {
+   "kcal": 22.0,
+   "protein_g": 0.6,
+   "carbs_g": 7.3,
+   "fat_g": 0.1
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 219"
+ },
+ {
+  "id": "suco_caju",
+  "group": "suco",
+  "group_label": "Suco",
+  "variant": "Caju envasado",
+  "aliases": [
+   "suco de caju"
+  ],
+  "per100ml": {
+   "kcal": 45.0,
+   "protein_g": 0.4,
+   "carbs_g": 10.7,
+   "fat_g": 0.2
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 188"
+ },
+ {
+  "id": "suco_maracuja",
+  "group": "suco",
+  "group_label": "Suco",
+  "variant": "Maracujá envasado",
+  "aliases": [
+   "suco de maracuja"
+  ],
+  "per100ml": {
+   "kcal": 42.0,
+   "protein_g": 0.8,
+   "carbs_g": 9.6,
+   "fat_g": 0.2
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 234"
+ },
+ {
+  "id": "suco_uva",
+  "group": "suco",
+  "group_label": "Suco",
+  "variant": "Uva envasado",
+  "aliases": [
+   "suco de uva"
+  ],
+  "per100ml": {
+   "kcal": 58.0,
+   "protein_g": 0.0,
+   "carbs_g": 14.7,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 258"
+ },
+ {
+  "id": "agua_coco",
+  "group": "outras",
+  "group_label": "Outras bebidas",
+  "variant": "Água de coco",
+  "aliases": [
+   "agua de coco"
+  ],
+  "per100ml": {
+   "kcal": 22.0,
+   "protein_g": 0.0,
+   "carbs_g": 5.3,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 478"
+ },
+ {
+  "id": "caldo_cana",
+  "group": "outras",
+  "group_label": "Outras bebidas",
+  "variant": "Caldo de cana",
+  "aliases": [
+   "garapa",
+   "caldo de cana"
+  ],
+  "per100ml": {
+   "kcal": 65.0,
+   "protein_g": 0.0,
+   "carbs_g": 18.2,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 473"
+ },
+ {
+  "id": "isotonico",
+  "group": "outras",
+  "group_label": "Outras bebidas",
+  "variant": "Isotônico",
+  "aliases": [
+   "gatorade",
+   "isotonico"
+  ],
+  "per100ml": {
+   "kcal": 26.0,
+   "protein_g": 0.0,
+   "carbs_g": 6.4,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 470"
+ },
+ {
+  "id": "cafe",
+  "group": "outras",
+  "group_label": "Outras bebidas",
+  "variant": "Café sem açúcar",
+  "aliases": [
+   "cafe"
+  ],
+  "per100ml": {
+   "kcal": 9.0,
+   "protein_g": 0.7,
+   "carbs_g": 1.5,
+   "fat_g": 0.1
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 471"
+ },
+ {
+  "id": "cha_mate",
+  "group": "outras",
+  "group_label": "Outras bebidas",
+  "variant": "Chá mate",
+  "aliases": [
+   "cha mate",
+   "mate"
+  ],
+  "per100ml": {
+   "kcal": 3.0,
+   "protein_g": 0.0,
+   "carbs_g": 0.6,
+   "fat_g": 0.1
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 476"
+ },
+ {
+  "id": "cha_preto",
+  "group": "outras",
+  "group_label": "Outras bebidas",
+  "variant": "Chá preto",
+  "aliases": [
+   "cha"
+  ],
+  "per100ml": {
+   "kcal": 2.0,
+   "protein_g": 0.0,
+   "carbs_g": 0.6,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 477"
+ },
+ {
+  "id": "cerveja",
+  "group": "outras",
+  "group_label": "Outras bebidas",
+  "variant": "Cerveja pilsen",
+  "aliases": [
+   "cerveja",
+   "chopp"
+  ],
+  "per100ml": {
+   "kcal": 41.0,
+   "protein_g": 0.6,
+   "carbs_g": 3.3,
+   "fat_g": 0.0
+  },
+  "sugar_free": false,
+  "source": "TACO 4a ed. (NEPA/Unicamp), alimento n. 474"
+ },
+ {
+  "id": "agua",
+  "group": "outras",
+  "group_label": "Outras bebidas",
+  "variant": "Água",
+  "aliases": [
+   "agua"
+  ],
+  "per100ml": {
+   "kcal": 0.0,
+   "protein_g": 0.0,
+   "carbs_g": 0.0,
+   "fat_g": 0.0
+  },
+  "sugar_free": true,
+  "source": "Sem calorias"
+ }
+]

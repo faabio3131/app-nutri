@@ -315,25 +315,30 @@ func (h *APIHandler) AnalyzeText(c *gin.Context) {
 
 // reserveText reserva 1 uso diário de texto de forma atômica (lock por usuário).
 func (h *APIHandler) reserveText(ctx context.Context, userID string, limit int) (string, bool, error) {
+	return h.reserveSource(ctx, userID, "text", limit)
+}
+
+// reserveSource reserva 1 uso diário de uma fonte de IA sem foto ("text" ou "refine"), de forma atômica.
+func (h *APIHandler) reserveSource(ctx context.Context, userID, source string, limit int) (string, bool, error) {
 	tx, err := h.pool.Begin(ctx)
 	if err != nil {
 		return "", false, err
 	}
 	defer tx.Rollback(ctx)
-	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "text:"+userID); err != nil {
+	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, source+":"+userID); err != nil {
 		return "", false, err
 	}
-	tx.Exec(ctx, `DELETE FROM photo_analyses WHERE user_id=$1 AND source='text' AND status='pending' AND created_at < now() - interval '3 minutes'`, userID)
+	tx.Exec(ctx, `DELETE FROM photo_analyses WHERE user_id=$1 AND source=$2 AND status='pending' AND created_at < now() - interval '3 minutes'`, userID, source)
 	var n int
-	if err := tx.QueryRow(ctx, `SELECT count(*) FROM photo_analyses WHERE user_id=$1 AND source='text' AND status IN ('ok','pending')
-		AND (created_at AT TIME ZONE 'America/Sao_Paulo')::date = (now() AT TIME ZONE 'America/Sao_Paulo')::date`, userID).Scan(&n); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM photo_analyses WHERE user_id=$1 AND source=$2 AND status IN ('ok','pending')
+		AND (created_at AT TIME ZONE 'America/Sao_Paulo')::date = (now() AT TIME ZONE 'America/Sao_Paulo')::date`, userID, source).Scan(&n); err != nil {
 		return "", false, err
 	}
 	if n >= limit {
 		return "", false, nil
 	}
 	var id string
-	if err := tx.QueryRow(ctx, `INSERT INTO photo_analyses(user_id, source) VALUES($1,'text') RETURNING id::text`, userID).Scan(&id); err != nil {
+	if err := tx.QueryRow(ctx, `INSERT INTO photo_analyses(user_id, source) VALUES($1,$2) RETURNING id::text`, userID, source).Scan(&id); err != nil {
 		return "", false, err
 	}
 	return id, true, tx.Commit(ctx)

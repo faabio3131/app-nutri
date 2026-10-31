@@ -33,6 +33,11 @@ type GeminiResponseSchema struct {
 		TotalFatG       float64 `json:"total_fat_g"`
 		ConfidenceLevel string  `json:"confidence_level"`
 		Notes           string  `json:"notes"`
+		// Ajudam o usuário a confirmar o que a IA viu (ex.: iogurte x leite) e a informar a quantidade real.
+		Alternatives  []string `json:"alternatives"`
+		IsLiquid      bool     `json:"is_liquid"`
+		ServingAmount float64  `json:"serving_amount"`
+		ServingUnit   string   `json:"serving_unit"`
 	} `json:"meal_summary"`
 	Items []MealItem `json:"items"`
 }

@@ -22,3 +22,7 @@ func (s *MealService) ProcessMealPhoto(imageBytes []byte, mimeType string, local
 func (s *MealService) ProcessMealText(text string, locale string) (*domain.GeminiResponseSchema, error) {
 	return s.geminiClient.AnalyzeMealText(text, locale)
 }
+
+func (s *MealService) ScanPhoto(imageBytes []byte, mimeType string) (*domain.ScanResult, error) {
+	return s.geminiClient.ScanMealImage(imageBytes, mimeType)
+}
