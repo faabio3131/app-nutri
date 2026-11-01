@@ -332,6 +332,9 @@ func sanitizeScan(r *domain.ScanResult) *domain.ScanResult {
 		}
 		clean = append(clean, it)
 	}
+	if clean == nil {
+		clean = []domain.ScanItem{} // nunca "items": null no JSON (o app faz items.map)
+	}
 	r.Items = clean
 	if _, ok := catalog.DrinkByID(r.Drink.DrinkID); !ok {
 		r.Drink.DrinkID = ""
