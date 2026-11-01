@@ -20,13 +20,13 @@ export default function MealBuilderModal({ scan, onClose, onSaved }: {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [mode, setMode] = useState<'prato' | 'bebida'>(s.kind === 'bebida' ? 'bebida' : 'prato');
   const keyRef = useRef(0);
-  const [rows, setRows] = useState<Row[]>(() => s.items.map((i) => ({ key: keyRef.current++, food_id: i.food_id, name: i.name, grams: '', qty: '', share: i.volume_share || 1 })));
+  const [rows, setRows] = useState<Row[]>(() => (s.items || []).map((i) => ({ key: keyRef.current++, food_id: i.food_id, name: i.name, grams: '', qty: '', share: i.volume_share || 1 })));
   const [totalG, setTotalG] = useState('');
   const [complement, setComplement] = useState('');
   const [search, setSearch] = useState('');
-  const [drinkId, setDrinkId] = useState(s.drink.drink_id);
-  const [ml, setMl] = useState(s.drink.volume_ml > 0 ? String(Math.round(s.drink.volume_ml)) : '');
-  const [label, setLabel] = useState(s.drink.label_kcal_100ml > 0 ? String(s.drink.label_kcal_100ml) : '');
+  const [drinkId, setDrinkId] = useState(s.drink?.drink_id || '');
+  const [ml, setMl] = useState((s.drink?.volume_ml || 0) > 0 ? String(Math.round(s.drink.volume_ml)) : '');
+  const [label, setLabel] = useState((s.drink?.label_kcal_100ml || 0) > 0 ? String(s.drink.label_kcal_100ml) : '');
   const [preview, setPreview] = useState<CalcResult | null>(null);
   const [needGrams, setNeedGrams] = useState<string[]>([]);
   const [error, setError] = useState('');
